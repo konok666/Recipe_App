@@ -1,0 +1,208 @@
+.mealplanner-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f2994a, #f2c94c);
+  font-family: "Poppins", sans-serif;
+  padding: 60px 20px;
+}
+
+.mealplanner-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  padding: 40px;
+  width: 600px;
+  text-align: center;
+}
+
+.mealplanner-title {
+  font-size: 28px;
+  color: #f2994a;
+  margin-bottom: 10px;
+}
+
+.mealplanner-subtitle {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+.planner-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.day-selector,
+.meal-input,
+.ingredient-input {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-size: 15px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.day-selector {
+  appearance: none;
+  background-image: url("dd.png");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.add-meal-btn {
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-meal-btn:hover {
+  background: #d35400;
+  color: #333;
+}
+
+.meal-list h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.meal-item {
+  background: #fafafa;
+  border: 1px solid #eee;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meal-content {
+  flex: 1;
+}
+
+.delete-meal-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.3s;
+  margin-left: 10px;
+}
+
+.delete-meal-btn:hover {
+  background: #c0392b;
+}
+
+.ingredients {
+  font-size: 14px;
+  color: #555;
+}
+
+.no-meal {
+  color: #777;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.generate-list-btn {
+  background: #e67e22;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+  flex: 1;
+  max-width: 200px;
+}
+
+.generate-list-btn:hover {
+  background: #d35400;
+  color: #333;
+}
+
+.clear-all-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+  flex: 1;
+  max-width: 200px;
+}
+
+.clear-all-btn:hover {
+  background: #c0392b;
+}
+
+.shopping-list {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.shopping-list h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.shopping-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.shopping-item {
+  background: #fff6e5;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border-left: 4px solid #e67e22;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shopping-item span {
+  flex: 1;
+}
+
+.delete-shopping-btn {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 6px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: background 0.3s;
+  margin-left: 8px;
+}
+
+.delete-shopping-btn:hover {
+  background: #c0392b;
+}

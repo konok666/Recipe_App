@@ -1,0 +1,52 @@
+.favorites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  background-color: #fafafa;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.favorites-container h1 {
+  text-align: center;
+  font-size: 2rem;
+  color: #222;
+  font-weight: 700;
+  margin-bottom: 40px;
+}
+
+.no-favorites {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #777;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  justify-items: center;
+  align-items: stretch;
+  padding-bottom: 40px;
+}
+
+.favorites-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.clear-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.clear-btn:hover {
+  background-color: #d32f2f;
+  transform: scale(1.05);
+}
