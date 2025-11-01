@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../Style/Login.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../Style/Login.css";
 
 function Login() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -18,40 +19,44 @@ function Login() {
     });
   };
 
+  // Handle login submission
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      const usersRaw = localStorage.getItem('registeredUsers');
-      const registeredUsers = usersRaw ? JSON.parse(usersRaw) : [];
-      const foundUser = registeredUsers.find(u => u.email === formData.email && u.password === formData.password);
-      if (!foundUser) {
-        alert('No account found for these credentials. Please sign up first.');
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Login failed. Please try again.");
         setIsLoading(false);
         return;
       }
-      
-      localStorage.setItem('user', JSON.stringify({
-        name: foundUser.name,
-        email: foundUser.email,
-        isLoggedIn: true
-      }));
-      
-      window.dispatchEvent(new CustomEvent('userLogin'));
-      
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'user',
-        newValue: localStorage.getItem('user'),
-        oldValue: null
-      }));
-      
-      alert('Login successful! Welcome to RecipeHub!');
-      navigate('/allrecipe'); // Navigate to all recipes page
+
+      // ✅ Store token & user info
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: data.user.name,
+          email: data.user.email,
+          token: data.token,
+          isLoggedIn: true,
+        })
+      );
+
+      alert("✅ Login successful! Welcome to RecipeHub 🍳");
+      navigate("/allrecipe");
     } catch (error) {
-      console.error('Login error:', error);
-      alert('Login failed. Please try again.');
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +70,7 @@ function Login() {
         </div>
         <h1 className="login-title">Welcome Back!</h1>
         <p className="login-subtitle">Sign in to your RecipeHub account</p>
-        
+
         <form className="login-form" onSubmit={handleLogin}>
           <div className="input-group">
             <input
@@ -78,7 +83,7 @@ function Login() {
               required
             />
           </div>
-          
+
           <div className="input-group">
             <input
               type="password"
@@ -90,37 +95,38 @@ function Login() {
               required
             />
           </div>
+
           <div className="login-footer">
-            <button 
-              type="button" 
-              className="forgot-password" 
-              onClick={() => navigate('/forgotpassword')}
+            <button
+              type="button"
+              className="forgot-password"
+              onClick={() => navigate("/forgotpassword")}
             >
               Forgot Password?
             </button>
           </div>
+
           <div className="login-buttons">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="login-button"
               disabled={isLoading}
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
-            
+
             <div className="divider">
               <span>or</span>
             </div>
-            
-            <button 
-              type="button" 
-              className="login-button" 
-              onClick={() => navigate('/signup')}
+
+            <button
+              type="button"
+              className="login-button"
+              onClick={() => navigate("/signup")}
             >
               Create New Account
             </button>
           </div>
-          
         </form>
       </div>
     </div>
