@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../Style/Signup.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../Style/Signup.css";
 
 function SignUp() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,69 +20,43 @@ function SignUp() {
     });
   };
 
-  const sendWelcomeEmail = async (userEmail, userName) => {
-    try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      console.log(`Welcome email sent to ${userEmail} for user ${userName}`);
-      return true;
-    } catch (error) {
-      console.error('Email sending failed:', error);
-      return false;
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match!');
+      alert("❌ Passwords do not match!");
       return;
     }
-    
+
     if (formData.password.length < 6) {
-      alert('Password must be at least 6 characters long!');
+      alert("⚠️ Password must be at least 6 characters long!");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const existingUsersRaw = localStorage.getItem('registeredUsers');
-      const existingUsers = existingUsersRaw ? JSON.parse(existingUsersRaw) : [];
-      const updatedUsers = [
-        ...existingUsers.filter(u => u.email !== formData.email),
-        { name: formData.name, email: formData.email, password: formData.password }
-      ];
-      localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+      const response = await fetch("http://localhost:5000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          password: formData.password,
+        }),
+      });
 
-      localStorage.setItem('user', JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        isLoggedIn: true
-      }));
-      
-      window.dispatchEvent(new CustomEvent('userLogin'));
+      const data = await response.json();
 
-      window.dispatchEvent(new StorageEvent('storage', {
-        key: 'user',
-        newValue: localStorage.getItem('user'),
-        oldValue: null
-      }));
-
-      const emailSent = await sendWelcomeEmail(formData.email, formData.name);
-      
-      if (emailSent) {
-        alert(`Account created successfully! Welcome to RecipeHub, ${formData.name}! A confirmation email has been sent to ${formData.email}. Please check your inbox.`);
+      if (response.ok && data.success) {
+        alert("🎉 Account created successfully!");
+        navigate("/login");
       } else {
-        alert(`Account created successfully! Welcome to RecipeHub, ${formData.name}! (Note: Email confirmation could not be sent at this time)`);
+        alert(data.message || "❌ Signup failed. Please try again.");
       }
-      
-      navigate('/login'); // Navigate to login page
     } catch (error) {
-      console.error('Signup error:', error);
-      alert('Signup failed. Please try again.');
+      console.error("Signup error:", error);
+      alert("🚨 Something went wrong. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -95,8 +69,10 @@ function SignUp() {
           <img src="/signup_logo.png" alt="RecipeHub Signup" />
         </div>
         <h1 className="signup-title">Join RecipeHub!</h1>
-        <p className="signup-subtitle">Create your account and start your culinary journey</p>
-        
+        <p className="signup-subtitle">
+          Create your account and start your culinary journey 🍳
+        </p>
+
         <form className="signup-form" onSubmit={handleSubmit}>
           <div className="input-group">
             <input
@@ -109,7 +85,7 @@ function SignUp() {
               required
             />
           </div>
-          
+
           <div className="input-group">
             <input
               type="email"
@@ -121,7 +97,7 @@ function SignUp() {
               required
             />
           </div>
-          
+
           <div className="input-group">
             <input
               type="password"
@@ -133,7 +109,7 @@ function SignUp() {
               required
             />
           </div>
-          
+
           <div className="input-group">
             <input
               type="password"
@@ -145,22 +121,18 @@ function SignUp() {
               required
             />
           </div>
-          
-          <button 
-            type="submit" 
-            className="signup-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
+
+          <button type="submit" className="signup-button" disabled={isLoading}>
+            {isLoading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
-        
+
         <div className="signup-footer">
           <p>
-            Already have an account?{' '}
-            <button 
-              className="signup-link" 
-              onClick={() => navigate('/login')}
+            Already have an account?{" "}
+            <button
+              className="signup-link"
+              onClick={() => navigate("/login")}
             >
               Sign in here
             </button>
