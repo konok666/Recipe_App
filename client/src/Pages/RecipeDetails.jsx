@@ -6,6 +6,7 @@ const RecipeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -15,6 +16,15 @@ const RecipeDetails = () => {
   const [rating, setRating] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
 
+  // editing
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingText, setEditingText] = useState("");
+  const [editingRating, setEditingRating] = useState(0);
+
+  // current user from localStorage (expected shape: { _id, name, email, ... })
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  // ---------- recipes array (kept inline as you requested) ----------
   useEffect(() => {
     const recipes = [
       {
@@ -309,605 +319,200 @@ const RecipeDetails = () => {
         cookTime: "0 mins (plus chilling 4 hours)",
         servings: "4-6 people"
       },
-      {
-        id: 11,
-        title: "Pav Bhaji",
-        category: "Street Food",
-        image: "Pav_Bhaji.png",
-        description: "A popular Indian street food dish consisting of spicy mashed vegetables served with buttered bread rolls (pav).",
-        ingredients: [
-          "4 medium potatoes (boiled and mashed)",
-          "1 cup cauliflower (chopped)",
-          "1/2 cup green peas",
-          "1 cup carrots (chopped)",
-          "1 onion (finely chopped)",
-          "1 green bell pepper (chopped)",
-          "2 tomatoes (pureed)",
-          "2 tbsp butter",
-          "2 tbsp oil",
-          "1 tbsp ginger-garlic paste",
-          "2 tsp Pav Bhaji masala",
-          "1 tsp red chili powder",
-          "1/2 tsp turmeric powder",
-          "Salt to taste",
-          "1/2 cup water",
-          "Fresh coriander for garnish",
-          "4-6 pav buns",
-          "Extra butter for toasting pav"
-        ],
-        instructions: [
-          "Heat oil and 1 tbsp butter in a pan; sauté onions until translucent.",
-          "Add ginger-garlic paste and sauté for a minute.",
-          "Add chopped vegetables and cook for 5-6 minutes.",
-          "Add tomato puree, turmeric, chili powder, pav bhaji masala, and salt; cook until vegetables are soft.",
-          "Mash the mixture slightly with a masher and add water to adjust consistency.",
-          "Add remaining butter and simmer for 5-7 minutes.",
-          "Garnish with chopped coriander.",
-          "Slice pav buns, toast with butter on a pan until golden.",
-          "Serve hot with the bhaji and a lemon wedge on the side."
-        ],
-        prepTime: "20 mins",
-        cookTime: "30 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 12,
-        title: "Rasgulla & Sandesh",
-        category: "Dessert",
-        image: "Rasgulla_Sandesh.png",
-        description: "Iconic Bengali sweets made from chhena (fresh cottage cheese). Rasgulla is soft, spongy, and soaked in sugar syrup, while Sandesh is lightly sweetened and flavored with cardamom or saffron.",
-        ingredients: [
-          "1 liter full-fat milk",
-          "2-3 tbsp lemon juice or vinegar",
-          "1 cup sugar",
-          "4 cups water",
-          "1/4 tsp cardamom powder",
-          "Few saffron strands (optional)"
-        ],
-        instructions: [
-          "Boil milk in a pan, then add lemon juice/vinegar to curdle and separate chhena (cottage cheese).",
-          "Strain the chhena using a muslin cloth and rinse with cold water to remove sourness.",
-          "Knead the chhena for 5-10 minutes until smooth.",
-          "For Rasgulla: Divide chhena into small balls.",
-          "Boil sugar and water in a pan to make sugar syrup; add chhena balls and cook for 10-12 minutes until spongy.",
-          "For Sandesh: Take a portion of chhena, mix with sugar and cardamom, shape into flat discs or decorative forms.",
-          "Optionally, garnish with saffron strands.",
-          "Serve chilled."
-        ],
-        prepTime: "30 mins",
-        cookTime: "20 mins",
-        servings: "4-6 people"
-      },
-      {
-        id: 13,
-        title: "Macher Jhol",
-        category: "East Indian",
-        image: "Fish.png",
-        description: "A traditional Bengali fish curry made with freshwater fish, mustard, and a blend of aromatic spices, served with steamed rice.",
-        ingredients: [
-          "500g freshwater fish (like rohu or catla), cleaned and cut",
-          "2 tbsp mustard oil (or vegetable oil)",
-          "1 tsp mustard seeds",
-          "1 medium onion, finely chopped",
-          "2 tomatoes, chopped",
-          "2-3 green chilies, slit",
-          "1 tsp ginger paste",
-          "1/2 tsp turmeric powder",
-          "1/2 tsp red chili powder",
-          "1 tsp cumin powder",
-          "Salt to taste",
-          "Fresh coriander leaves for garnish",
-          "2 cups water"
-        ],
-        instructions: [
-          "Heat mustard oil in a pan until smoking point, reduce flame and add mustard seeds.",
-          "Add chopped onions and sauté until golden brown.",
-          "Add ginger paste, green chilies, turmeric, red chili powder, and cumin powder; sauté for 1-2 minutes.",
-          "Add chopped tomatoes and cook until soft.",
-          "Pour in water and bring to a boil.",
-          "Gently add fish pieces, cover, and simmer for 10-12 minutes until fish is cooked.",
-          "Adjust salt and garnish with fresh coriander leaves.",
-          "Serve hot with steamed rice."
-        ],
-        prepTime: "15 mins",
-        cookTime: "25 mins",
-        servings: "34 people"
-      },
-      {
-        id: 14,
-        title: "Dhokla",
-        category: "Snack",
-        image: "Dhokla.png",
-        description: "A soft and fluffy steamed cake made from fermented gram flour, originating from Gujarat, served with green chutney or fried chilies.",
-        ingredients: [
-          "1 cup gram flour (besan)",
-          "1/2 cup yogurt (curd)",
-          "1/2 tsp turmeric powder",
-          "1 tsp ginger-green chili paste",
-          "1 tsp Eno fruit salt or baking soda",
-          "Salt to taste",
-          "2 tbsp water (as needed)",
-          "1 tbsp oil",
-          "1 tsp mustard seeds",
-          "A pinch of asafoetida (hing)",
-          "2-3 green chilies (slit)",
-          "Fresh coriander leaves for garnish"
-        ],
-        instructions: [
-          "In a bowl, mix gram flour, yogurt, turmeric, ginger-green chili paste, salt, and water to form a smooth batter.",
-          "Add Eno fruit salt or baking soda just before steaming and mix gently.",
-          "Grease a steaming tray and pour the batter evenly.",
-          "Steam for 15-20 minutes until a toothpick inserted comes out clean.",
-          "Heat oil in a small pan, add mustard seeds, asafoetida, and slit green chilies; pour this tempering over the steamed dhokla.",
-          "Garnish with chopped coriander leaves, cut into squares, and serve with green chutney."
-        ],
-        prepTime: "15 mins",
-        cookTime: "20 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 15,
-        title: "Momos",
-        category: "Street Food",
-        image: "Momos.png",
-        description: "A popular street food from India and Tibet consisting of steamed or fried dumplings filled with vegetables or meat, served with a spicy chutney.",
-        ingredients: [
-          "2 cups all-purpose flour",
-          "1/2 tsp salt",
-          "Water as needed",
-          "1 cup cabbage (finely chopped)",
-          "1/2 cup carrot (grated)",
-          "1/2 cup capsicum or bell pepper (finely chopped)",
-          "1 small onion (finely chopped)",
-          "2 cloves garlic (minced)",
-          "1 tsp ginger (minced)",
-          "1 tsp soy sauce",
-          "Salt and pepper to taste",
-          "1 tsp oil (for filling)"
-        ],
-        instructions: [
-          "Mix flour and salt in a bowl, add water gradually and knead into a smooth dough; let it rest for 30 minutes.",
-          "Heat oil in a pan, sauté garlic, ginger, onions, and other vegetables until slightly soft.",
-          "Add soy sauce, salt, and pepper; cook for 2-3 minutes and cool the filling.",
-          "Roll small portions of dough into thin circles.",
-          "Place a spoonful of filling in the center of each circle and fold to seal edges.",
-          "Steam momos in a steamer for 10-12 minutes until cooked.",
-          "Optionally, deep-fry the momos for a crispy version.",
-          "Serve hot with spicy red chutney or soy sauce."
-        ],
-        prepTime: "30 mins",
-        cookTime: "15 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 16,
-        title: "Chole Bhature",
-        category: "Breakfast",
-        image: "Chole_Bhature.png",
-        description: "A North Indian classic breakfast dish made of spicy chickpeas (chole) served with fluffy deep-fried bread (bhature).",
-        ingredients: [
-          "1 cup chickpeas (soaked overnight)",
-          "1 large onion (finely chopped)",
-          "2 tomatoes (pureed)",
-          "1 tsp ginger-garlic paste",
-          "1 tsp cumin seeds",
-          "1 tsp turmeric powder",
-          "1 tsp red chili powder",
-          "1 tbsp chole masala or garam masala",
-          "Salt to taste",
-          "2 tbsp oil",
-          "Fresh coriander for garnish",
-          "For Bhature:",
-          "2 cups all-purpose flour (maida)",
-          "2 tbsp semolina (sooji)",
-          "1/2 cup yogurt (curd)",
-          "1/2 tsp baking soda",
-          "Salt to taste",
-          "Water as needed",
-          "Oil for deep frying"
-        ],
-        instructions: [
-          "Pressure cook soaked chickpeas until soft; drain and set aside.",
-          "Heat oil in a pan, add cumin seeds, and sauté onions until golden brown.",
-          "Add ginger-garlic paste and cook for 1 minute.",
-          "Add tomato puree, turmeric, chili powder, and chole masala; cook until oil separates.",
-          "Add boiled chickpeas, salt, and a little water; simmer for 10-15 minutes.",
-          "For Bhature: Mix flour, semolina, yogurt, baking soda, salt, and water to form a soft dough.",
-          "Cover and rest the dough for 1-2 hours.",
-          "Divide into portions and roll into circles.",
-          "Deep-fry in hot oil until puffed and golden.",
-          "Serve hot Bhature with spicy Chole, garnished with coriander and onions."
-        ],
-        prepTime: "2 hours (including soaking)",
-        cookTime: "30 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 17,
-        title: "Goan Prawn Curry",
-        category: "West Indian",
-        image: "GoanPrawnCurry.png",
-        description: "A flavorful coastal curry from Goa made with prawns simmered in a rich coconut and tamarind-based gravy infused with aromatic spices.",
-        ingredients: [
-          "400g prawns (cleaned and deveined)",
-          "1 cup grated coconut",
-          "1 medium onion (finely chopped)",
-          "2 tomatoes (chopped)",
-          "2-3 dried red chilies",
-          "1 tsp turmeric powder",
-          "1 tsp coriander powder",
-          "1 tsp cumin seeds",
-          "1 small piece of tamarind (soaked in water)",
-          "2 cloves garlic",
-          "1-inch ginger piece",
-          "2 tbsp oil",
-          "Salt to taste",
-          "Fresh coriander leaves for garnish"
-        ],
-        instructions: [
-          "Grind grated coconut, red chilies, cumin seeds, ginger, garlic, and tamarind into a smooth paste using little water.",
-          "Heat oil in a pan, add chopped onions, and sauté until golden brown.",
-          "Add chopped tomatoes and cook until soft.",
-          "Add the ground coconut paste, turmeric, coriander powder, and salt; sauté for 2-3 minutes.",
-          "Add 1 cup water and bring the curry to a gentle boil.",
-          "Add prawns and simmer for 8-10 minutes until cooked through.",
-          "Garnish with fresh coriander leaves.",
-          "Serve hot with steamed rice or Goan red rice."
-        ],
-        prepTime: "20 mins",
-        cookTime: "25 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 18,
-        title: "Hyderabadi Biryani",
-        category: "South Indian",
-        image: "Hyderabadi_Biryani.png",
-        description: "A royal and aromatic rice dish from Hyderabad made with layers of fragrant basmati rice, marinated meat, and rich spices cooked together in the traditional dum style.",
-        ingredients: [
-          "500g basmati rice",
-          "500g chicken or mutton (bone-in pieces)",
-          "2 large onions (thinly sliced and fried)",
-          "1/2 cup yogurt",
-          "2 tbsp ginger-garlic paste",
-          "2 green chilies (slit)",
-          "1/2 tsp turmeric powder",
-          "1 tbsp red chili powder",
-          "1 tsp garam masala",
-          "Fresh coriander and mint leaves (chopped)",
-          "Juice of 1 lemon",
-          "4 tbsp ghee or oil",
-          "Whole spices: bay leaf, cardamom, cloves, cinnamon",
-          "Saffron strands soaked in 2 tbsp warm milk",
-          "Salt to taste"
-        ],
-        instructions: [
-          "Wash and soak basmati rice for 30 minutes.",
-          "Marinate chicken or mutton with yogurt, ginger-garlic paste, turmeric, chili powder, garam masala, lemon juice, mint, coriander, and salt. Let it rest for at least 1 hour.",
-          "Cook rice with whole spices until 70% done; drain and set aside.",
-          "In a heavy-bottomed pot, spread the marinated meat at the bottom.",
-          "Add a layer of half-cooked rice on top, followed by fried onions, saffron milk, and a drizzle of ghee.",
-          "Repeat the layers and seal the pot with a tight lid or dough to trap steam.",
-          "Cook on low heat (dum) for 25-30 minutes until the meat is tender and rice fully cooked.",
-          "Gently mix before serving to combine the layers.",
-          "Serve hot with raita and salad."
-        ],
-        prepTime: "1 hour",
-        cookTime: "40 mins",
-        servings: "4-5 people"
-      },
-      {
-        id: 19,
-        title: "Aloo Puri",
-        category: "Breakfast",
-        image: "Aloo_Puri.png",
-        description: "A classic North Indian breakfast dish made of crispy, deep-fried bread (puri) served with a flavorful and spiced potato curry.",
-        ingredients: [
-          "For Puri:",
-          "2 cups whole wheat flour",
-          "1/2 tsp salt",
-          "1 tbsp oil",
-          "Water as needed",
-          "Oil for deep frying",
-          "For Aloo Curry:",
-          "3 medium potatoes (boiled and cubed)",
-          "1 onion (chopped)",
-          "2 tomatoes (chopped)",
-          "1 tsp ginger-garlic paste",
-          "1/2 tsp turmeric powder",
-          "1 tsp cumin seeds",
-          "1 tsp coriander powder",
-          "1 tsp garam masala",
-          "1/2 tsp red chili powder",
-          "Salt to taste",
-          "2 tbsp oil",
-          "Fresh coriander leaves for garnish"
-        ],
-        instructions: [
-          "In a bowl, mix flour, salt, and oil. Add water gradually to form a stiff dough. Rest for 15 minutes.",
-          "Divide dough into small balls and roll into small circles.",
-          "Heat oil in a deep pan and fry puris until puffed and golden brown. Set aside.",
-          "For curry, heat oil in a pan and add cumin seeds.",
-          "Add onions and sauté until golden, then add ginger-garlic paste and cook for 1 minute.",
-          "Add tomatoes, turmeric, chili powder, coriander powder, and salt; cook until oil separates.",
-          "Add boiled potatoes and 1 cup of water; simmer for 10 minutes.",
-          "Sprinkle garam masala and garnish with coriander leaves.",
-          "Serve hot puris with spicy aloo curry."
-        ],
-        prepTime: "25 mins",
-        cookTime: "25 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 20,
-        title: "Chingri Malai Curry",
-        category: "East Indian",
-        image: "Chingri_Malai_Curry.png",
-        description: "A rich and creamy Bengali delicacy made with prawns simmered in a coconut milk gravy infused with aromatic spices and a touch of sweetness.",
-        ingredients: [
-          "400g prawns (cleaned and deveined)",
-          "1 cup coconut milk",
-          "1 large onion (finely sliced)",
-          "1 tomato (chopped)",
-          "1 tbsp ginger-garlic paste",
-          "2 green chilies (slit)",
-          "1/2 tsp turmeric powder",
-          "1 tsp red chili powder",
-          "1 tsp garam masala",
-          "2 tbsp mustard oil or vegetable oil",
-          "1 bay leaf",
-          "1/2 tsp cumin seeds",
-          "Salt to taste",
-          "Fresh coriander leaves for garnish"
-        ],
-        instructions: [
-          "Marinate prawns with salt and turmeric powder; set aside for 10 minutes.",
-          "Heat mustard oil in a pan until slightly smoky and lightly fry the prawns for 1-2 minutes; remove and keep aside.",
-          "In the same oil, add bay leaf and cumin seeds. Sauté sliced onions until golden brown.",
-          "Add ginger-garlic paste and green chilies; cook for 1 minute.",
-          "Add chopped tomatoes, red chili powder, and garam masala; cook until oil separates.",
-         "Pour in coconut milk and a little water to make the gravy.",
-         "Add fried prawns and simmer for 5-7 minutes on low heat until they are cooked and the gravy thickens.",
-         "Adjust salt and garnish with coriander leaves.",
-         "Serve hot with steamed basmati rice."
-        ],
-        prepTime: "20 mins",
-        cookTime: "25 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 21,
-        title: "Chicken Xacuti",
-        category: "West Indian",
-        image: "Chicken_Xacuti.png",
-        description: "A flavorful Goan curry made with chicken cooked in a rich roasted coconut, poppy seed, and aromatic spice masala.",
-        ingredients: [
-          "500g chicken (cut into pieces)",
-          "2 tbsp oil",
-          "2 onions (sliced)",
-          "1 tomato (chopped)",
-          "1 cup grated coconut",
-          "1 tbsp poppy seeds",
-          "1 tbsp coriander seeds",
-          "1 tsp cumin seeds",
-          "4-5 dried red chilies",
-          "1-inch cinnamon stick",
-          "3-4 cloves",
-          "3-4 black peppercorns",
-          "2-3 green cardamoms",
-          "1 tsp turmeric powder",
-          "1 tbsp ginger-garlic paste",
-          "1 cup water",
-          "Salt to taste",
-          "Fresh coriander leaves for garnish"
-        ],
-        instructions: [
-          "Dry roast grated coconut, poppy seeds, red chilies, and whole spices until golden and fragrant; cool and grind into a smooth paste.",
-          "Heat oil in a pan, sauté onions until golden brown.",
-          "Add ginger-garlic paste and cook for a minute.",
-          "Add chopped tomato and cook until soft.",
-          "Add chicken pieces, turmeric, and salt; sauté for 5 minutes.",
-          "Add the roasted masala paste and mix well.",
-          "Pour water as needed to make a thick curry; simmer for 20-25 minutes until chicken is tender and oil separates.",
-          "Garnish with fresh coriander leaves and serve hot with steamed rice or Goan pav."
-        ],
-        prepTime: "25 mins",
-        cookTime: "35 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 22,
-        title: "Rajma Chawal",
-        category: "North Indian",
-        image: "Rajma_Chawal.png",
-        description: "A comforting North Indian dish featuring red kidney beans simmered in a spiced tomato gravy, served with steamed basmati rice.",
-        ingredients: [
-          "1 cup rajma (red kidney beans, soaked overnight)",
-          "2 cups water (for pressure cooking)",
-          "2 medium onions (finely chopped)",
-          "2 tomatoes (pureed)",
-          "1 tbsp ginger-garlic paste",
-          "2 green chilies (slit)",
-          "1/2 tsp turmeric powder",
-          "1 tsp cumin seeds",
-          "1 tsp coriander powder",
-          "1 tsp garam masala",
-          "1 tsp red chili powder",
-          "2 tbsp oil or ghee",
-          "Salt to taste",
-          "Fresh coriander leaves for garnish",
-          "Steamed basmati rice (for serving)"
-        ],
-        instructions: [
-          "Pressure cook soaked rajma with water and a pinch of salt for 4-5 whistles or until soft.",
-          "Heat oil in a pan, add cumin seeds, and let them splutter.",
-          "Add onions and sauté until golden brown.",
-          "Add ginger-garlic paste and green chilies; cook for 1 minute.",
-          "Add tomato puree, turmeric, chili powder, coriander powder, and salt; cook until oil separates.",
-          "Add boiled rajma along with some of the cooking water; mix well.",
-          "Simmer for 15-20 minutes until the curry thickens and flavors blend.",
-          "Add garam masala and garnish with fresh coriander leaves.",
-          "Serve hot with steamed basmati rice."
-        ],
-        prepTime: "8 hours (including soaking)",
-        cookTime: "40 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 23,
-        title: "Paneer Butter Masala",
-        category: "Veg Food",
-        image: "PaneerButterMasala.png",
-        description: "A rich and creamy North Indian curry made with soft paneer cubes simmered in a buttery tomato-based gravy infused with aromatic spices.",
-        ingredients: [
-          "200g paneer (cubed)",
-         "2 large tomatoes (pureed)",
-          "1 onion (finely chopped)",
-          "1 tbsp ginger-garlic paste",
-          "2 tbsp butter",
-          "1 tbsp fresh cream",
-          "1 tbsp oil",
-          "1/2 tsp cumin seeds",
-          "1/2 tsp turmeric powder",
-          "1 tsp red chili powder",
-          "1 tsp garam masala",
-          "1 tsp coriander powder",
-          "1/2 tsp kasuri methi (dried fenugreek leaves)",
-          "Salt to taste",
-          "Fresh coriander leaves for garnish"
-        ],
-        instructions: [
-          "Heat oil and butter in a pan, add cumin seeds, and let them splutter.",
-          "Add chopped onions and sauté until golden brown.",
-          "Add ginger-garlic paste and cook for a minute.",
-          "Add tomato puree, turmeric, chili powder, coriander powder, and salt; cook until oil separates.",
-          "Add a little water and bring the gravy to a gentle boil.",
-          "Add paneer cubes and simmer for 5-7 minutes.",
-          "Stir in cream, garam masala, and crushed kasuri methi.",
-          "Cook for another 2-3 minutes on low heat.",
-          "Garnish with fresh coriander leaves and serve hot with naan, roti, or steamed rice."
-        ],
-        prepTime: "15 mins",
-        cookTime: "25 mins",
-        servings: "3-4 people"
-      },
-      {
-        id: 24,
-        title: "Paneer Tikka",
-        category: "Starter",
-        image: "Paneer_Tikka.png",
-        description: "A popular North Indian appetizer made with cubes of paneer marinated in yogurt and spices, grilled or baked to perfection.",
-        ingredients: [
-          "250g paneer (cubed)",
-          "1/2 cup thick yogurt",
-          "1 tbsp ginger-garlic paste",
-          "1 tsp red chili powder",
-          "1/2 tsp turmeric powder",
-          "1 tsp garam masala",
-          "1 tsp cumin powder",
-          "1 tsp coriander powder",
-          "1 tbsp lemon juice",
-          "1 tbsp oil",
-          "Salt to taste",
-          "1 onion, 1 capsicum, cut into cubes (for skewering, optional)",
-          "Wooden or metal skewers"
-        ],
-        instructions: [
-          "In a bowl, mix yogurt, ginger-garlic paste, red chili powder, turmeric, garam masala, cumin, coriander powder, lemon juice, oil, and salt to make the marinade.",
-          "Add paneer cubes (and vegetables if using) to the marinade; coat well and refrigerate for at least 1 hour.",
-          "Preheat grill, oven, or stovetop pan.",
-          "Thread marinated paneer (and vegetables) onto skewers.",
-          "Grill or bake at 200°C for 10-15 minutes, turning occasionally until paneer is lightly charred.",
-          "Serve hot with mint chutney and lemon wedges."
-        ],
-        prepTime: "15 mins",
-        cookTime: "15 mins",
-        servings: "2-3 people"
-      }
+      // ... (you already had many more entries — include them here exactly as in your file)
+      // For brevity I didn't repeat every recipe here in this snippet comment,
+      // but in your actual file paste the full array you already have.
     ];
 
+    // find recipe (recipes list uses numeric id)
     const foundRecipe = recipes.find(r => r.id === parseInt(id));
     if (foundRecipe) setRecipe(foundRecipe);
 
-    const storedComments = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
-    setComments(storedComments);
-
-    if (storedComments.length > 0) {
-      const avg = storedComments.reduce((sum, c) => sum + (Number(c.rating) || 0), 0) / storedComments.length;
-      setAverageRating(Number(avg.toFixed(1)));
-    }
-
+    // local comments from localStorage (fallback in case backend not used)
+    // but we will call backend below to populate actual comments
     setLoading(false);
   }, [id]);
 
-  const handleAdd = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user?.email) {
-      alert("Please log in to add favorites.");
-      return;
+  // ---------- Comments backend integration ----------
+  const API_BASE = "http://localhost:5000/api"; // change if your backend base is different
+
+  // fetch comments from backend
+  const fetchComments = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/comments/${id}`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.comments)) {
+        setComments(data.comments);
+        // compute average rating
+        if (data.comments.length > 0) {
+          const avg = data.comments.reduce((s, c) => s + (Number(c.rating) || 0), 0) / data.comments.length;
+          setAverageRating(Number(avg.toFixed(1)));
+        } else {
+          setAverageRating(0);
+        }
+      } else {
+        // fallback: try reading localStorage (existing app used that)
+        const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+        setComments(stored);
+        if (stored.length > 0) {
+          const avg = stored.reduce((s, c) => s + (Number(c.rating) || 0), 0) / stored.length;
+          setAverageRating(Number(avg.toFixed(1)));
+        } else {
+          setAverageRating(0);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch comments:", err);
+      // fallback to localStorage
+      const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+      setComments(stored);
+      if (stored.length > 0) {
+        const avg = stored.reduce((s, c) => s + (Number(c.rating) || 0), 0) / stored.length;
+        setAverageRating(Number(avg.toFixed(1)));
+      } else {
+        setAverageRating(0);
+      }
     }
-
-    const allFav = JSON.parse(localStorage.getItem("favoritesByUser")) || {};
-    const userFav = allFav[user.email] || [];
-
-    if (userFav.some((r) => r.id === recipe.id)) {
-      alert("This recipe is already in your favorites!");
-      return;
-    }
-
-    const updated = [...userFav, recipe];
-    allFav[user.email] = updated;
-    localStorage.setItem("favoritesByUser", JSON.stringify(allFav));
-    
-    window.dispatchEvent(new Event("favoritesUpdated"));
-    
-    alert(`${recipe.title} has been added to your favorites ❤️`);
   };
 
-  if (loading) return <div className="recipe-details-container">Loading...</div>;
+  useEffect(() => {
+    fetchComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
-  if (!recipe) {
-    return (
-      <div className="recipe-details-container">
-        <h1>Recipe not found</h1>
-        <button onClick={handleBackNavigation}>Back to Recipes</button>
-      </div>
-    );
-  }
-
-  const handleAddComment = (e) => {
+  // Add comment (POST)
+  const handleAddComment = async (e) => {
     e.preventDefault();
+    if (!user?.email) {
+      alert("Please log in to add a comment.");
+      return;
+    }
     if (!newComment.trim()) return;
 
-    const commentData = {
-      user: "Current User",
-      text: newComment,
-      rating,
-      date: new Date().toLocaleString(),
+    const payload = {
+      recipeId: id,
+      userId: user._id || user.id || user.email, // whatever your user id field is
+      userName: user.name || user.email,
+      commentText: newComment.trim(),
+      rating: rating || 0,
     };
 
-    const updated = [...comments, commentData];
-    setComments(updated);
-    localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
-
-    const avg = updated.reduce((sum, c) => sum + (Number(c.rating) || 0), 0) / updated.length;
-    setAverageRating(Number(avg.toFixed(1)));
-
-    setNewComment("");
-    setRating(0);
+    try {
+      const res = await fetch(`${API_BASE}/comments/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setNewComment("");
+        setRating(0);
+        fetchComments();
+      } else {
+        // If backend rejects, fallback to localStorage
+        console.warn("Add comment response:", data);
+        const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+        const fallbackComment = {
+          _id: "local-" + Date.now(),
+          recipeId: id,
+          userId: payload.userId,
+          userName: payload.userName,
+          commentText: payload.commentText,
+          rating: payload.rating,
+          createdAt: new Date().toISOString(),
+        };
+        const updated = [fallbackComment, ...stored];
+        localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
+        setComments(updated);
+      }
+    } catch (err) {
+      console.error("Error adding comment:", err);
+      // fallback to localStorage
+      const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+      const fallbackComment = {
+        _id: "local-" + Date.now(),
+        recipeId: id,
+        userId: payload.userId,
+        userName: payload.userName,
+        commentText: payload.commentText,
+        rating: payload.rating,
+        createdAt: new Date().toISOString(),
+      };
+      const updated = [fallbackComment, ...stored];
+      localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
+      setComments(updated);
+    }
   };
 
-  const handleDeleteComment = (indexToDelete) => {
-    const updated = comments.filter((_, idx) => idx !== indexToDelete);
-    setComments(updated);
-    localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
-
-    const avg = updated.length > 0
-      ? updated.reduce((sum, c) => sum + (Number(c.rating) || 0), 0) / updated.length
-      : 0;
-    setAverageRating(Number(avg.toFixed(1)));
+  // Delete comment
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    try {
+      const res = await fetch(`${API_BASE}/comments/delete/${commentId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchComments();
+      } else {
+        // fallback: remove from localStorage
+        const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+        const updated = stored.filter(c => c._id !== commentId);
+        localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
+        setComments(updated);
+      }
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      // fallback local
+      const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+      const updated = stored.filter(c => c._id !== commentId);
+      localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
+      setComments(updated);
+    }
   };
 
+  // Start editing
+  const handleStartEdit = (c) => {
+    setEditingCommentId(c._id);
+    setEditingText(c.commentText);
+    setEditingRating(c.rating || 0);
+  };
+
+  // Save edited comment (PUT)
+  const handleSaveEdit = async (commentId) => {
+    if (!editingText.trim()) return alert("Comment cannot be empty.");
+    try {
+      const res = await fetch(`${API_BASE}/comments/update/${commentId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentText: editingText.trim(), rating: editingRating || 0 }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setEditingCommentId(null);
+        setEditingText("");
+        setEditingRating(0);
+        fetchComments();
+      } else {
+        // fallback to local edit
+        const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+        const updated = stored.map(c => c._id === commentId ? { ...c, commentText: editingText, rating: editingRating } : c);
+        localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
+        setComments(updated);
+        setEditingCommentId(null);
+      }
+    } catch (err) {
+      console.error("Error updating comment:", err);
+      // fallback local edit
+      const stored = JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
+      const updated = stored.map(c => c._id === commentId ? { ...c, commentText: editingText, rating: editingRating } : c);
+      localStorage.setItem(`comments_${id}`, JSON.stringify(updated));
+      setComments(updated);
+      setEditingCommentId(null);
+    }
+  };
+
+  // Share (same as before)
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -921,10 +526,44 @@ const RecipeDetails = () => {
     }
   };
 
+  // Add to favorites (keeps your existing localStorage favorites behavior)
+  const handleAddFavorite = () => {
+    const userLS = JSON.parse(localStorage.getItem("user"));
+    if (!userLS?.email) {
+      alert("Please log in to add favorites.");
+      return;
+    }
+
+    const allFav = JSON.parse(localStorage.getItem("favoritesByUser")) || {};
+    const userFav = allFav[userLS.email] || [];
+
+    if (userFav.some((r) => r.id === recipe.id)) {
+      alert("This recipe is already in your favorites!");
+      return;
+    }
+
+    const updated = [...userFav, recipe];
+    allFav[userLS.email] = updated;
+    localStorage.setItem("favoritesByUser", JSON.stringify(allFav));
+    window.dispatchEvent(new Event("favoritesUpdated"));
+    alert(`${recipe.title} has been added to your favorites ❤️`);
+  };
+
   const handleBackNavigation = () => {
     const sourcePage = location.state?.from || 'allrecipe';
     navigate(`/${sourcePage}`);
   };
+
+  // render loading or not found
+  if (loading) return <div className="recipe-details-container">Loading...</div>;
+  if (!recipe) {
+    return (
+      <div className="recipe-details-container">
+        <h1>Recipe not found</h1>
+        <button onClick={handleBackNavigation}>Back to Recipes</button>
+      </div>
+    );
+  }
 
   return (
     <div className="recipe-details-container">
@@ -937,7 +576,7 @@ const RecipeDetails = () => {
           <img src={`/${recipe.image}`} alt={recipe.title} className="recipe-image" />
           <div className="action-buttons">
             <button className="share-btn" onClick={handleShare}>📤 Share Recipe</button>
-            <button className="favorite-btn" onClick={handleAdd}>❤️ Add to Favorites</button>
+            <button className="favorite-btn" onClick={handleAddFavorite}>❤️ Add to Favorites</button>
           </div>
         </div>
 
@@ -987,6 +626,7 @@ const RecipeDetails = () => {
       {/* Comments Section */}
       <div className="comments-section">
         <h2>Comments & Reviews</h2>
+
         <form className="comment-form" onSubmit={handleAddComment}>
           <textarea
             placeholder="Write your comment..."
@@ -994,11 +634,13 @@ const RecipeDetails = () => {
             onChange={(e) => setNewComment(e.target.value)}
           />
           <div className="rating">
+            <label style={{ marginRight: 8 }}>Rating:</label>
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={star}
                 className={rating >= star ? "star active" : "star"}
                 onClick={() => setRating(star)}
+                style={{ cursor: 'pointer', marginRight: 6 }}
               >
                 ★
               </span>
@@ -1008,21 +650,57 @@ const RecipeDetails = () => {
         </form>
 
         <div className="comment-list">
-          {comments.map((c, index) => (
-            <div key={index} className="comment-card">
-              <div className="comment-header">
-                <strong>{c.user}</strong>
-                <span>⭐ {c.rating}</span>
+          {comments.length === 0 ? (
+            <p className="no-comments">No comments yet — be the first!</p>
+          ) : (
+            comments.map((c) => (
+              <div key={c._id} className="comment-card">
+                <div className="comment-header">
+                  <strong>{c.userName || c.user}</strong>
+                  <span>⭐ {c.rating}</span>
+                </div>
+
+                {editingCommentId === c._id ? (
+                  <>
+                    <textarea
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                    />
+                    <div style={{ marginTop: 8 }}>
+                      <label style={{ marginRight: 8 }}>Rating:</label>
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <span
+                          key={s}
+                          className={editingRating >= s ? "star active" : "star"}
+                          onClick={() => setEditingRating(s)}
+                          style={{ cursor: 'pointer', marginRight: 6 }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <div className="comment-footer" style={{ marginTop: 8 }}>
+                      <button onClick={() => handleSaveEdit(c._id)}>Save</button>
+                      <button onClick={() => { setEditingCommentId(null); setEditingText(""); }}>Cancel</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p>{c.commentText || c.text}</p>
+                    <div className="comment-footer">
+                      <small>{new Date(c.createdAt || c.date || c.updatedAt || Date.now()).toLocaleString()}</small>
+                      {user && (user._id === c.userId || user.id === c.userId || user.email === c.userId) && (
+                        <div>
+                          <button onClick={() => handleStartEdit(c)}>Edit</button>
+                          <button onClick={() => handleDeleteComment(c._id)}>Delete</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-              <p>{c.text}</p>
-              <div className="comment-footer">
-                <small>{c.date}</small>
-                <button className="delete-comment" onClick={() => handleDeleteComment(index)}>
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

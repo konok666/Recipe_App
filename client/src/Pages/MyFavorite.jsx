@@ -60,9 +60,19 @@ const MyFavorite = () => {
 
   return (
     <div className="all-recipes-container">
-      <h1>❤️ My Favorite Recipes</h1>
+      <div className="header-section">
+        <h1>❤️ My Favorite Recipes</h1>
 
-      {/* ✅ Clear All Button (only visible when there are favorites) */}
+        {/* ✅ Summary section - top right */}
+        <div className="favorites-summary">
+          <div className="summary-card">
+            <h2>Total Favorite Recipes</h2>
+            <p>{favorites.length}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ✅ Clear All Button */}
       {favorites.length > 0 && (
         <button className="clear-all-btn" onClick={clearAllFavorites}>
           🗑️ Clear All Recipes

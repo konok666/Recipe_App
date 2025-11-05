@@ -1,210 +1,255 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../Style/MealPlanner.css";
 
-const daysOfWeek = [
-  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-];
-
-function MealPlanner() {
-  // Get current user
+const MealPlanner = () => {
   const currentUser = JSON.parse(localStorage.getItem("user"));
-  const userKey = currentUser ? currentUser.email || currentUser.name : "guest";
+  const userId = currentUser ? currentUser._id || currentUser.email : "guest";
 
-  // Load user-specific meal plan
-  const loadMealPlan = () => {
+  const [day, setDay] = useState("");
+  const [mealName, setMealName] = useState("");
+  const [ingredients, setIngredients] = useState("");
+  const [mealPlans, setMealPlans] = useState([]);
+  const [shoppingList, setShoppingList] = useState([]);
+  const [editMeal, setEditMeal] = useState(null);
+
+  // Animated counters
+  const [mealCount, setMealCount] = useState(0);
+  const [shoppingCount, setShoppingCount] = useState(0);
+
+  const API_BASE = "http://localhost:5000/api";
+
+  // ✅ Animate counter (like in Cookbook)
+  const animateCounter = (setter, target) => {
+    let start = 0;
+    const duration = 800;
+    const stepTime = 16;
+    const totalSteps = duration / stepTime;
+    const increment = (target - start) / totalSteps;
+    let current = start;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+      setter(Math.floor(current));
+    }, stepTime);
+  };
+
+  // ✅ Fetch meals
+  const fetchMealPlans = async () => {
     try {
-      const saved = localStorage.getItem(`mealPlan_${userKey}`);
-      return saved
-        ? JSON.parse(saved)
-        : {
-            Monday: [],
-            Tuesday: [],
-            Wednesday: [],
-            Thursday: [],
-            Friday: [],
-            Saturday: [],
-            Sunday: [],
-          };
-    } catch (error) {
-      console.error("Error loading meal plan:", error);
-      return {
-        Monday: [],
-        Tuesday: [],
-        Wednesday: [],
-        Thursday: [],
-        Friday: [],
-        Saturday: [],
-        Sunday: [],
-      };
-    }
-  };
+      const res = await axios.get(`${API_BASE}/mealplanner/${userId}`);
+      const plans = res.data?.mealPlans || [];
 
-  // Load user-specific shopping list
-  const loadShoppingList = () => {
-    try {
-      const saved = localStorage.getItem(`shoppingList_${userKey}`);
-      return saved ? JSON.parse(saved) : [];
-    } catch (error) {
-      console.error("Error loading shopping list:", error);
-      return [];
-    }
-  };
-
-  const [mealPlan, setMealPlan] = useState(loadMealPlan);
-  const [shoppingList, setShoppingList] = useState(loadShoppingList);
-  const [currentDay, setCurrentDay] = useState("Monday");
-  const [mealInput, setMealInput] = useState("");
-  const [ingredientInput, setIngredientInput] = useState("");
-
-  // Save meal plan (specific to user)
-  useEffect(() => {
-    localStorage.setItem(`mealPlan_${userKey}`, JSON.stringify(mealPlan));
-  }, [mealPlan, userKey]);
-
-  // Save shopping list (specific to user)
-  useEffect(() => {
-    localStorage.setItem(`shoppingList_${userKey}`, JSON.stringify(shoppingList));
-  }, [shoppingList, userKey]);
-
-  const handleAddMeal = () => {
-    if (mealInput.trim() === "") return;
-
-    const updatedPlan = {
-      ...mealPlan,
-      [currentDay]: [
-        ...mealPlan[currentDay],
-        {
-          name: mealInput.trim(),
-          ingredients: ingredientInput
-            .split(",")
-            .map((i) => i.trim())
-            .filter((i) => i !== ""),
-        },
-      ],
-    };
-
-    setMealPlan(updatedPlan);
-    setMealInput("");
-    setIngredientInput("");
-  };
-
-  const handleDeleteMeal = (day, index) => {
-    const updatedPlan = {
-      ...mealPlan,
-      [day]: mealPlan[day].filter((_, i) => i !== index),
-    };
-    setMealPlan(updatedPlan);
-  };
-
-  const handleDeleteShoppingItem = (index) => {
-    const updatedList = shoppingList.filter((_, i) => i !== index);
-    setShoppingList(updatedList);
-  };
-
-  const generateShoppingList = () => {
-    const allIngredients = [];
-    Object.values(mealPlan).forEach((dayMeals) => {
-      dayMeals.forEach((meal) => {
-        allIngredients.push(...meal.ingredients);
+      // Sort newest first
+      plans.forEach((plan) => {
+        plan.meals.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       });
-    });
-    const uniqueList = [...new Set(allIngredients.filter((i) => i))];
-    setShoppingList(uniqueList);
+
+      setMealPlans(plans);
+      const totalMeals = plans.reduce((acc, plan) => acc + plan.meals.length, 0);
+      animateCounter(setMealCount, totalMeals);
+    } catch (error) {
+      console.error("Error fetching meal plans:", error);
+    }
   };
+
+  // ✅ Fetch shopping list
+  const fetchShoppingList = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/mealplanner/${userId}/shoppinglist`);
+      const list = res.data?.shoppingList || [];
+      setShoppingList(list);
+      animateCounter(setShoppingCount, list.length);
+    } catch (error) {
+      console.error("Error fetching shopping list:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userId) {
+      fetchMealPlans();
+      fetchShoppingList();
+    }
+  }, [userId]);
+
+  // ✅ Add / Update Meal
+  const handleAddMeal = async (e) => {
+    e.preventDefault();
+    if (!day || !mealName || !ingredients) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    try {
+      if (editMeal) {
+        await axios.put(`${API_BASE}/mealplanner/${userId}/${day}/${editMeal._id}`, {
+          mealName,
+          ingredients: ingredients.split(",").map((i) => i.trim()),
+        });
+        setEditMeal(null);
+      } else {
+        await axios.post(`${API_BASE}/mealplanner`, {
+          userId,
+          day,
+          mealName,
+          ingredients: ingredients.split(",").map((i) => i.trim()),
+        });
+      }
+
+      setMealName("");
+      setIngredients("");
+      await fetchMealPlans();
+      await fetchShoppingList();
+    } catch (error) {
+      console.error("Error adding/updating meal:", error);
+    }
+  };
+
+  // ✅ Edit Meal
+  const handleEditMeal = (day, meal) => {
+    setDay(day);
+    setMealName(meal.name);
+    setIngredients(meal.ingredients.join(", "));
+    setEditMeal(meal);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // ✅ Delete Meal
+  const handleDeleteMeal = async (day, mealId) => {
+    if (!window.confirm("Delete this meal?")) return;
+    try {
+      await axios.delete(`${API_BASE}/mealplanner/${userId}/${day}/${mealId}`);
+      await fetchMealPlans();
+      await fetchShoppingList();
+    } catch (error) {
+      console.error("Error deleting meal:", error);
+    }
+  };
+
+  // ✅ Clear All Meals
+  const handleClearAllMeals = async () => {
+    if (!window.confirm("Are you sure you want to delete ALL meals?")) return;
+    try {
+      await axios.delete(`${API_BASE}/mealplanner/${userId}/clear`);
+      setMealPlans([]);
+      setShoppingList([]);
+      animateCounter(setMealCount, 0);
+      animateCounter(setShoppingCount, 0);
+    } catch (error) {
+      console.error("Error clearing all meals:", error);
+    }
+  };
+
+  // ✅ Delete shopping list item manually
+  const handleDeleteShoppingItem = (index) => {
+    const updated = shoppingList.filter((_, i) => i !== index);
+    setShoppingList(updated);
+    animateCounter(setShoppingCount, updated.length);
+  };
+
+  // ✅ Filter empty days
+  const filteredPlans = mealPlans.filter((plan) => plan.meals?.length > 0);
 
   return (
-    <div className="mealplanner-page">
-      <div className="mealplanner-card">
-        <h1 className="mealplanner-title">🍽️ Weekly Meal Planner</h1>
-        <p className="mealplanner-subtitle">
-          Plan your meals for the week and generate your shopping list!
-        </p>
+    <div className="mealplanner-container">
+      <h1>🥗 Meal Planner</h1>
 
-        <div className="planner-controls">
-          <select
-            className="day-selector"
-            value={currentDay}
-            onChange={(e) => setCurrentDay(e.target.value)}
-          >
-            {daysOfWeek.map((day) => (
-              <option key={day} value={day}>
-                {day}
+      {/* 🌟 Animated Summary Section */}
+      <div className="summary-section">
+        <div className="summary-card">
+          <h2>{mealCount}</h2>
+          <p>Total Meals Added</p>
+        </div>
+        <div className="summary-card">
+          <h2>{shoppingCount}</h2>
+          <p>Shopping Items</p>
+        </div>
+      </div>
+
+      {/* 🥣 Add / Update Form */}
+      <form className="meal-form" onSubmit={handleAddMeal}>
+        <select value={day} onChange={(e) => setDay(e.target.value)}>
+          <option value="">Select Day</option>
+          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(
+            (d) => (
+              <option key={d} value={d}>
+                {d}
               </option>
-            ))}
-          </select>
+            )
+          )}
+        </select>
 
-          <input
-            type="text"
-            placeholder="Enter meal name"
-            value={mealInput}
-            onChange={(e) => setMealInput(e.target.value)}
-            className="meal-input"
-          />
+        <input
+          type="text"
+          placeholder="Meal Name"
+          value={mealName}
+          onChange={(e) => setMealName(e.target.value)}
+        />
 
-          <input
-            type="text"
-            placeholder="Enter ingredients (comma-separated)"
-            value={ingredientInput}
-            onChange={(e) => setIngredientInput(e.target.value)}
-            className="ingredient-input"
-          />
+        <textarea
+          placeholder="Ingredients (comma separated)"
+          value={ingredients}
+          onChange={(e) => setIngredients(e.target.value)}
+        />
 
-          <button className="add-meal-btn" onClick={handleAddMeal}>
-            Add Meal
+        <button type="submit">{editMeal ? "Update Meal" : "Add Meal"}</button>
+      </form>
+
+      {/* 🗑️ Clear All Button */}
+      {filteredPlans.length > 0 && (
+        <div className="clear-section">
+          <button className="clear-btn" onClick={handleClearAllMeals}>
+            🗑️ Clear All Meals
           </button>
         </div>
+      )}
 
-        <div className="meal-list">
-          <h2>{currentDay}'s Meals</h2>
-          {mealPlan[currentDay].length === 0 ? (
-            <p className="no-meal">No meals planned yet.</p>
-          ) : (
-            mealPlan[currentDay].map((meal, index) => (
-              <div key={index} className="meal-item">
-                <div className="meal-content">
-                  <strong>{meal.name}</strong>
-                  <p className="ingredients">
-                    Ingredients: {meal.ingredients.join(", ")}
-                  </p>
-                </div>
-                <button
-                  className="delete-meal-btn"
-                  onClick={() => handleDeleteMeal(currentDay, index)}
-                  title="Delete meal"
-                >
+      {/* 🛒 Shopping List */}
+      {shoppingList.length > 0 && (
+        <div className="shopping-list">
+          <h2>🛍️ Shopping List</h2>
+          <ul>
+            {shoppingList.map((item, i) => (
+              <li key={i}>
+                {item}
+                <button className="delete-item-btn" onClick={() => handleDeleteShoppingItem(i)}>
                   ❌
                 </button>
-              </div>
-            ))
-          )}
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
 
-        <button className="generate-list-btn" onClick={generateShoppingList}>
-          Generate Shopping List
-        </button>
-
-        {shoppingList.length > 0 && (
-          <div className="shopping-list">
-            <h2>🛒 Shopping List</h2>
-            <ul>
-              {shoppingList.map((item, index) => (
-                <li key={index} className="shopping-item">
-                  <span>{item}</span>
-                  <button
-                    className="delete-shopping-btn"
-                    onClick={() => handleDeleteShoppingItem(index)}
-                    title="Delete item"
-                  >
-                    ❌
-                  </button>
-                </li>
+      {/* 📅 Meals Section */}
+      <div className="mealplan-list">
+        {filteredPlans.length === 0 ? (
+          <p className="no-meals">No meals added yet.</p>
+        ) : (
+          filteredPlans.map((plan) => (
+            <div key={plan._id} className="day-card">
+              <h2>{plan.day}</h2>
+              {plan.meals.map((meal) => (
+                <div key={meal._id} className="meal-card">
+                  <h3>{meal.name}</h3>
+                  <p>
+                    <strong>Ingredients:</strong> {meal.ingredients.join(", ")}
+                  </p>
+                  <div className="meal-actions">
+                    <button onClick={() => handleEditMeal(plan.day, meal)}>✏️</button>
+                    <button onClick={() => handleDeleteMeal(plan.day, meal._id)}>🗑️</button>
+                  </div>
+                </div>
               ))}
-            </ul>
-          </div>
+            </div>
+          ))
         )}
       </div>
     </div>
   );
-}
+};
 
 export default MealPlanner;
