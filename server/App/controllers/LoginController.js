@@ -8,7 +8,7 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check user existence
+    // Check if user exists
     const user = await SignupModel.findOne({ email });
     if (!user) {
       return res.status(400).json({
@@ -17,7 +17,7 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Compare password
+    // Validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -26,21 +26,17 @@ exports.loginUser = async (req, res) => {
       });
     }
 
-    // Save login data in Login collection
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const loginData = await LoginModel.create({
-      email,
-      password: hashedPassword,
-    });
+    // Save login record
+    await LoginModel.create({ email, password: user.password });
 
-    // Generate token
+    // Generate JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || "default_secret",
       { expiresIn: "1h" }
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Login successful!",
       token,
@@ -49,18 +45,17 @@ exports.loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
       },
-      loginData,
     });
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",
     });
   }
 };
 
-// ✅ View all logins
+// ✅ Get all login records
 exports.getAllLogins = async (req, res) => {
   try {
     const logins = await LoginModel.find().sort({ loginTime: -1 });
@@ -71,7 +66,7 @@ exports.getAllLogins = async (req, res) => {
   }
 };
 
-// ✅ View login by ID
+// ✅ Get login by ID
 exports.getLoginById = async (req, res) => {
   try {
     const login = await LoginModel.findById(req.params.id);
@@ -85,45 +80,35 @@ exports.getLoginById = async (req, res) => {
   }
 };
 
-// ✅ Update login by ID
+// ✅ Update login
 exports.updateLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const updateData = { email };
-
-    if (password) {
-      updateData.password = await bcrypt.hash(password, 10);
-    }
-
+    const { email } = req.body;
     const updatedLogin = await LoginModel.findByIdAndUpdate(
       req.params.id,
-      updateData,
-      { new: true, runValidators: true }
+      { email },
+      { new: true }
     );
 
     if (!updatedLogin) {
       return res.status(404).json({ success: false, message: "Login not found" });
     }
 
-    res.status(200).json({
-      success: true,
-      message: "Login updated successfully",
-      login: updatedLogin,
-    });
+    res.status(200).json({ success: true, message: "Login updated", updatedLogin });
   } catch (error) {
     console.error("Update Login Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// ✅ Delete login by ID
+// ✅ Delete login
 exports.deleteLogin = async (req, res) => {
   try {
     const deletedLogin = await LoginModel.findByIdAndDelete(req.params.id);
     if (!deletedLogin) {
       return res.status(404).json({ success: false, message: "Login not found" });
     }
-    res.status(200).json({ success: true, message: "Login deleted successfully" });
+    res.status(200).json({ success: true, message: "Login deleted" });
   } catch (error) {
     console.error("Delete Login Error:", error);
     res.status(500).json({ success: false, message: "Server error" });

@@ -1,3 +1,7 @@
+/* ===============================
+   🍽️ Recipe Details Page Styling
+   =============================== */
+
 .recipe-details-container {
   max-width: 1000px;
   margin: 40px auto;
@@ -5,11 +9,12 @@
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   color: #333;
   line-height: 1.6;
 }
 
+/* 🔙 Back Button */
 .back-btn {
   background-color: transparent;
   border: none;
@@ -25,6 +30,7 @@
   text-decoration: underline;
 }
 
+/* 🧩 Header Section */
 .recipe-header {
   display: flex;
   flex-wrap: wrap;
@@ -32,6 +38,7 @@
   align-items: flex-start;
 }
 
+/* 🖼️ Image & Actions */
 .image-wrapper {
   position: relative;
   width: 100%;
@@ -55,16 +62,20 @@
   gap: 10px;
 }
 
-.image-wrapper .share-btn {
-  background-color: #3498db;
-  color: white;
+.image-wrapper .share-btn,
+.image-wrapper .favorite-btn {
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.image-wrapper .share-btn {
+  background-color: #3498db;
 }
 
 .image-wrapper .share-btn:hover {
@@ -75,14 +86,6 @@
 
 .image-wrapper .favorite-btn {
   background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .image-wrapper .favorite-btn:hover {
@@ -91,6 +94,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* 🧾 Recipe Info */
 .recipe-meta {
   flex: 1;
   display: flex;
@@ -107,14 +111,14 @@
 
 .category {
   font-size: 1rem;
-  color: #888;
+  color: #777;
   font-style: italic;
   margin-bottom: 8px;
 }
 
 .description {
   font-size: 1rem;
-  color: #555;
+  color: #444;
   margin-bottom: 16px;
 }
 
@@ -125,6 +129,7 @@
   margin-bottom: 16px;
 }
 
+/* 📊 Stats Section */
 .recipe-stats {
   display: flex;
   flex-wrap: wrap;
@@ -150,11 +155,13 @@
   color: #222;
 }
 
+/* 🥣 Ingredients & Instructions */
 .recipe-content {
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
-  margin-top: 60px;
+  margin-top: 50px;
+  margin-bottom: 40px;
 }
 
 .ingredients-section,
@@ -186,8 +193,9 @@
   line-height: 1.5;
 }
 
+/* 💬 Comments Section */
 .comments-section {
-  margin-top: 40px;
+  margin-top: 60px;
   padding-top: 30px;
   border-top: 2px solid #f0f0f0;
 }
@@ -201,6 +209,7 @@
   padding-bottom: 4px;
 }
 
+/* ✍️ Comment Form */
 .comment-form {
   background-color: #f8f9fa;
   padding: 20px;
@@ -225,6 +234,7 @@
   border-color: #3498db;
 }
 
+/* ⭐ Rating System */
 .rating {
   display: flex;
   gap: 5px;
@@ -235,7 +245,7 @@
   font-size: 1.5rem;
   color: #ddd;
   cursor: pointer;
-  transition: color 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .star.active {
@@ -243,7 +253,8 @@
 }
 
 .star:hover {
-  color: #f39c12;
+  transform: scale(1.2);
+  color: #f1c40f;
 }
 
 .comment-form button {
@@ -261,6 +272,7 @@
   background-color: #2179b8;
 }
 
+/* 💬 Comment Cards */
 .comment-list {
   display: flex;
   flex-direction: column;
@@ -273,6 +285,12 @@
   border-radius: 12px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.comment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .comment-header {
@@ -305,7 +323,7 @@
 }
 
 .comment-footer small {
-  color: #888;
+  color: #777;
   font-size: 0.9rem;
 }
 
@@ -324,6 +342,7 @@
   background-color: #c0392b;
 }
 
+/* 📱 Responsive Design */
 @media (max-width: 768px) {
   .recipe-details-container {
     margin: 20px auto;
@@ -369,8 +388,6 @@
   }
 }
 
-
-
 @media (max-width: 480px) {
   .recipe-meta h1 {
     font-size: 1.5rem;
@@ -384,5 +401,11 @@
   .stat {
     width: 100%;
     text-align: center;
+  }
+
+  .recipe-image {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
   }
 }

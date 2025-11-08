@@ -8,7 +8,6 @@ import AllRecipe from "./Pages/AllRecipe";
 import Profile from "./Pages/Profile";
 import RecipeDetails from "./Pages/RecipeDetails";
 import MyFavorite from "./Pages/MyFavorite";
-import ForgotPassword from "./Pages/ForgotPassword";
 import MealPlanner from "./Pages/MealPlanner";
 
 function App() {
@@ -24,7 +23,6 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/recipe/:id" element={<RecipeDetails />} />
         <Route path="/favorites" element={<MyFavorite />} />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/mealplanner" element={<MealPlanner />} />
       </Routes>
     </Router>

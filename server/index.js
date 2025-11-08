@@ -16,10 +16,7 @@ app.use(express.json({ limit: "10mb" }));
 
 // ✅ MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.error("❌ MongoDB Connection Error:", err));
 
@@ -31,13 +28,13 @@ const mealPlannerRoutes = require("./App/routes/MealPlannerRoutes");
 const commentRoutes = require("./App/routes/CommentRoutes");
 
 // ✅ Register Routes
-app.use("/api/signup", signupRoutes);
+app.use("/api/signup", signupRoutes);   // Base route for signup
 app.use("/api/login", loginRoutes);
 app.use("/api/cookbook", cookbookRoutes);
 app.use("/api/mealplanner", mealPlannerRoutes);
-app.use("/api/comments", commentRoutes); // 👈 Proper base route for comments
+app.use("/api/comments", commentRoutes);
 
-// ✅ Default Route (Optional)
+// ✅ Default Route
 app.get("/", (req, res) => {
   res.send("🍳 Recipe App Backend is running successfully!");
 });

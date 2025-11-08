@@ -11,16 +11,23 @@ const MyCookbook = () => {
     image: "",
   });
   const [editingId, setEditingId] = useState(null);
-  const [count, setCount] = useState(0); // ✅ Animated counter
+  const [count, setCount] = useState(0);
 
-  // 🔹 Fetch recipes from backend
+  // ✅ Get logged-in user from localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
-    fetchRecipes();
+    if (user?.email) {
+      fetchRecipes();
+    }
   }, []);
 
+  // 🔹 Fetch only this user's recipes
   const fetchRecipes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/cookbook");
+      const res = await axios.get(
+        `http://localhost:5000/api/cookbook?email=${user.email}`
+      );
       const data = res.data.data || [];
       setRecipes(data);
       animateCounter(data.length);
@@ -32,8 +39,8 @@ const MyCookbook = () => {
   // 🧮 Smooth Counter Animation
   const animateCounter = (target) => {
     let start = count;
-    const duration = 800; // 0.8 seconds
-    const stepTime = 16; // ~60fps
+    const duration = 800;
+    const stepTime = 16;
     const totalSteps = duration / stepTime;
     const increment = (target - start) / totalSteps;
 
@@ -48,13 +55,11 @@ const MyCookbook = () => {
     }, stepTime);
   };
 
-  // 🔹 Handle form inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setRecipe((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔹 Handle image upload
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -66,7 +71,7 @@ const MyCookbook = () => {
     }
   };
 
-  // 🔹 Add or Update recipe
+  // 🔹 Add or Update recipe (include user email)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { title, ingredients, instructions } = recipe;
@@ -77,7 +82,7 @@ const MyCookbook = () => {
 
     try {
       if (editingId) {
-        // 🟠 Update recipe
+        // Update recipe
         const res = await axios.put(
           `http://localhost:5000/api/cookbook/${editingId}`,
           recipe
@@ -89,8 +94,11 @@ const MyCookbook = () => {
           setEditingId(null);
         }
       } else {
-        // 🟢 Add new recipe
-        const res = await axios.post("http://localhost:5000/api/cookbook", recipe);
+        // Add new recipe with user email
+        const res = await axios.post("http://localhost:5000/api/cookbook", {
+          ...recipe,
+          userEmail: user.email,
+        });
         if (res.data.success) {
           const newList = [res.data.recipe, ...recipes];
           setRecipes(newList);
@@ -98,14 +106,12 @@ const MyCookbook = () => {
         }
       }
 
-      // Reset form
       setRecipe({ title: "", ingredients: "", instructions: "", image: "" });
     } catch (error) {
       console.error("Error saving recipe:", error);
     }
   };
 
-  // 🔹 Edit recipe
   const handleEdit = (r) => {
     setRecipe({
       title: r.title,
@@ -117,7 +123,6 @@ const MyCookbook = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // 🔹 Delete recipe
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this recipe?")) return;
     try {
@@ -130,7 +135,6 @@ const MyCookbook = () => {
     }
   };
 
-  // 🔹 Delete all
   const handleClearAll = async () => {
     if (window.confirm("Are you sure you want to delete ALL recipes?")) {
       try {
@@ -149,7 +153,6 @@ const MyCookbook = () => {
     <div className="cookbook-container">
       <h1>🍳 My Cookbook</h1>
 
-      {/* 🔹 Animated Summary Card */}
       <div className="summary-section">
         <div className="summary-card">
           <h2>Total Recipes</h2>
@@ -157,7 +160,6 @@ const MyCookbook = () => {
         </div>
       </div>
 
-      {/* 🔹 Add / Update Form */}
       <form className="recipe-form" onSubmit={handleSubmit}>
         <input
           type="text"
@@ -192,7 +194,6 @@ const MyCookbook = () => {
         </button>
       )}
 
-      {/* 🔹 Recipe List */}
       <div className="recipe-list">
         {recipes.length === 0 ? (
           <p className="no-recipes">No recipes added yet.</p>

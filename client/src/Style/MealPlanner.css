@@ -9,7 +9,7 @@
 }
 
 .mealplanner-container h1 {
-  color: #333;
+  color: #f2994a;
   font-size: 2rem;
   margin-bottom: 20px;
   font-weight: 700;
@@ -35,7 +35,7 @@
 .summary-card h2 {
   margin: 0;
   font-size: 2rem;
-  color: #f4511e;
+  color: #5b6c97;
 }
 
 .summary-card p {
@@ -140,6 +140,48 @@
   cursor: pointer;
   color: #d32f2f;
   font-size: 1rem;
+}
+
+/* ===== 🍽️ ADDED MEALS SECTION ===== */
+.added-meals {
+  background: #f8f8f8;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.added-meals h2 {
+  font-size: 1.4rem;
+  color: #166ec6;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.added-meals ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.added-meals li {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin: 6px 0;
+  font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.3s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.added-meals li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* ===== DAY CARD ===== */

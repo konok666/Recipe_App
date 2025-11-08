@@ -3,24 +3,47 @@ const Cookbook = require("../models/CookbookModel");
 // 🟢 Create Recipe
 exports.createRecipe = async (req, res) => {
   try {
-    const newRecipe = await Cookbook.create(req.body);
+    const { title, ingredients, instructions, image, userEmail } = req.body;
+
+    if (!userEmail) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required to save a recipe.",
+      });
+    }
+
+    const newRecipe = await Cookbook.create({
+      title,
+      ingredients,
+      instructions,
+      image,
+      userEmail,
+    });
+
     res.status(201).json({
       success: true,
       message: "Recipe created successfully",
       recipe: newRecipe,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error creating recipe", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error creating recipe", error });
   }
 };
 
-// 🟣 Get All Recipes
+// 🟣 Get All Recipes (filtered by user email)
 exports.getAllRecipes = async (req, res) => {
   try {
-    const recipes = await Cookbook.find().sort({ createdAt: -1 });
+    const { email } = req.query; // frontend sends ?email=user@example.com
+    const filter = email ? { userEmail: email } : {};
+    const recipes = await Cookbook.find(filter).sort({ createdAt: -1 });
+
     res.status(200).json({ success: true, data: recipes });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error fetching recipes", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching recipes", error });
   }
 };
 
@@ -51,7 +74,7 @@ exports.getRecipeById = async (req, res) => {
   }
 };
 
-// 🟠 Update Recipe 
+// 🟠 Update Recipe
 exports.updateRecipe = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,7 +93,9 @@ exports.updateRecipe = async (req, res) => {
     );
 
     if (!updatedRecipe) {
-      return res.status(404).json({ success: false, message: "Recipe not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Recipe not found" });
     }
 
     res.status(200).json({
@@ -80,7 +105,9 @@ exports.updateRecipe = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Update Error:", error);
-    res.status(500).json({ success: false, message: "Error updating recipe", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating recipe", error });
   }
 };
 
@@ -91,11 +118,17 @@ exports.deleteRecipe = async (req, res) => {
     const deleted = await Cookbook.findByIdAndDelete(id);
 
     if (!deleted) {
-      return res.status(404).json({ success: false, message: "Recipe not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Recipe not found" });
     }
 
-    res.status(200).json({ success: true, message: "Recipe deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Recipe deleted successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error deleting recipe", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error deleting recipe", error });
   }
 };

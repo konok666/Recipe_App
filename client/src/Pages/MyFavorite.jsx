@@ -47,7 +47,6 @@ const MyFavorite = () => {
     setFavorites(updated);
   };
 
-  // ✅ Clear all recipes function
   const clearAllFavorites = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user?.email) return;
@@ -59,25 +58,24 @@ const MyFavorite = () => {
   };
 
   return (
-    <div className="all-recipes-container">
-      <div className="header-section">
-        <h1>❤️ My Favorite Recipes</h1>
+    <div className="favorites-container">
+      <h1>❤️ My Favorite Recipes</h1>
 
-        {/* ✅ Summary section - top right */}
+      {/* ✅ Action row: Clear button (left) + Summary (right) */}
+      <div className="favorites-actions-row">
+        {favorites.length > 0 && (
+          <button className="clear-all-btn" onClick={clearAllFavorites}>
+            🗑️ Clear All Recipes
+          </button>
+        )}
+
         <div className="favorites-summary">
           <div className="summary-card">
-            <h2>Total Favorite Recipes</h2>
+            <h3>Total Favorite Recipes</h3>
             <p>{favorites.length}</p>
           </div>
         </div>
       </div>
-
-      {/* ✅ Clear All Button */}
-      {favorites.length > 0 && (
-        <button className="clear-all-btn" onClick={clearAllFavorites}>
-          🗑️ Clear All Recipes
-        </button>
-      )}
 
       <div className="recipe-grid">
         {favorites.length === 0 ? (

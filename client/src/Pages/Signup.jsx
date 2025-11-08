@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👁️ import icons
 import "../Style/Signup.css";
 
 function SignUp() {
@@ -11,6 +12,8 @@ function SignUp() {
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,6 +77,7 @@ function SignUp() {
         </p>
 
         <form className="signup-form" onSubmit={handleSubmit}>
+          {/* Name */}
           <div className="input-group">
             <input
               type="text"
@@ -86,6 +90,7 @@ function SignUp() {
             />
           </div>
 
+          {/* Email */}
           <div className="input-group">
             <input
               type="email"
@@ -98,9 +103,10 @@ function SignUp() {
             />
           </div>
 
-          <div className="input-group">
+          {/* Password */}
+          <div className="input-group password-group">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -108,11 +114,18 @@ function SignUp() {
               className="signup-input"
               required
             />
+            <span
+              className="toggle-password"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
 
-          <div className="input-group">
+          {/* Confirm Password */}
+          <div className="input-group password-group">
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -120,6 +133,14 @@ function SignUp() {
               className="signup-input"
               required
             />
+            <span
+              className="toggle-password"
+              onClick={() =>
+                setShowConfirmPassword(!showConfirmPassword)
+              }
+            >
+              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
 
           <button type="submit" className="signup-button" disabled={isLoading}>

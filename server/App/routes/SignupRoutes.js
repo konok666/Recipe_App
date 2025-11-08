@@ -9,11 +9,11 @@ const {
 
 const router = express.Router();
 
-// Routes
-router.post("/signup", registerUser);      // Create user
-router.get("/signup", getAllUsers);        // Get all users
-router.get("/signup/:id", getUserById);    // Get single user
-router.put("/signup/:id", updateUser);     // Update user
-router.delete("/signup/:id", deleteUser);  // Delete user
+// ✅ Correct paths — no duplicate "/signup"
+router.post("/", registerUser);       // POST /api/signup
+router.get("/", getAllUsers);         // GET /api/signup
+router.get("/:id", getUserById);      // GET /api/signup/:id
+router.put("/:id", updateUser);       // PUT /api/signup/:id
+router.delete("/:id", deleteUser);    // DELETE /api/signup/:id
 
 module.exports = router;

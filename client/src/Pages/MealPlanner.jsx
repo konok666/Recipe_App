@@ -19,7 +19,6 @@ const MealPlanner = () => {
 
   const API_BASE = "http://localhost:5000/api";
 
-  // ✅ Animate counter (like in Cookbook)
   const animateCounter = (setter, target) => {
     let start = 0;
     const duration = 800;
@@ -37,17 +36,13 @@ const MealPlanner = () => {
     }, stepTime);
   };
 
-  // ✅ Fetch meals
   const fetchMealPlans = async () => {
     try {
       const res = await axios.get(`${API_BASE}/mealplanner/${userId}`);
       const plans = res.data?.mealPlans || [];
-
-      // Sort newest first
       plans.forEach((plan) => {
         plan.meals.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       });
-
       setMealPlans(plans);
       const totalMeals = plans.reduce((acc, plan) => acc + plan.meals.length, 0);
       animateCounter(setMealCount, totalMeals);
@@ -56,7 +51,6 @@ const MealPlanner = () => {
     }
   };
 
-  // ✅ Fetch shopping list
   const fetchShoppingList = async () => {
     try {
       const res = await axios.get(`${API_BASE}/mealplanner/${userId}/shoppinglist`);
@@ -75,7 +69,6 @@ const MealPlanner = () => {
     }
   }, [userId]);
 
-  // ✅ Add / Update Meal
   const handleAddMeal = async (e) => {
     e.preventDefault();
     if (!day || !mealName || !ingredients) {
@@ -108,7 +101,6 @@ const MealPlanner = () => {
     }
   };
 
-  // ✅ Edit Meal
   const handleEditMeal = (day, meal) => {
     setDay(day);
     setMealName(meal.name);
@@ -117,7 +109,6 @@ const MealPlanner = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ✅ Delete Meal
   const handleDeleteMeal = async (day, mealId) => {
     if (!window.confirm("Delete this meal?")) return;
     try {
@@ -129,7 +120,6 @@ const MealPlanner = () => {
     }
   };
 
-  // ✅ Clear All Meals
   const handleClearAllMeals = async () => {
     if (!window.confirm("Are you sure you want to delete ALL meals?")) return;
     try {
@@ -143,21 +133,18 @@ const MealPlanner = () => {
     }
   };
 
-  // ✅ Delete shopping list item manually
   const handleDeleteShoppingItem = (index) => {
     const updated = shoppingList.filter((_, i) => i !== index);
     setShoppingList(updated);
     animateCounter(setShoppingCount, updated.length);
   };
 
-  // ✅ Filter empty days
   const filteredPlans = mealPlans.filter((plan) => plan.meals?.length > 0);
-
   return (
     <div className="mealplanner-container">
       <h1>🥗 Meal Planner</h1>
 
-      {/* 🌟 Animated Summary Section */}
+      {/* 🌟 Summary Section */}
       <div className="summary-section">
         <div className="summary-card">
           <h2>{mealCount}</h2>
@@ -169,7 +156,7 @@ const MealPlanner = () => {
         </div>
       </div>
 
-      {/* 🥣 Add / Update Form */}
+      {/* 🥣 Add Meal Form */}
       <form className="meal-form" onSubmit={handleAddMeal}>
         <select value={day} onChange={(e) => setDay(e.target.value)}>
           <option value="">Select Day</option>
@@ -195,10 +182,9 @@ const MealPlanner = () => {
           onChange={(e) => setIngredients(e.target.value)}
         />
 
-        <button type="submit">{editMeal ? "Update Meal" : "Add Meal"}</button>
+        <button type="submit">{editMeal ? "Update Meal" : "Add Meal➕"}</button>
       </form>
 
-      {/* 🗑️ Clear All Button */}
       {filteredPlans.length > 0 && (
         <div className="clear-section">
           <button className="clear-btn" onClick={handleClearAllMeals}>
@@ -224,8 +210,9 @@ const MealPlanner = () => {
         </div>
       )}
 
-      {/* 📅 Meals Section */}
+      {/* 📅 Meals Section by Day */}
       <div className="mealplan-list">
+        <h2>🍽️ Added Meals</h2>
         {filteredPlans.length === 0 ? (
           <p className="no-meals">No meals added yet.</p>
         ) : (

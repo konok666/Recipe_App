@@ -18,6 +18,10 @@ const cookbookSchema = new mongoose.Schema(
       type: String, // base64 or URL
       default: "",
     },
+    userEmail: {
+      type: String,
+      required: true, // 👈 Every recipe must have a user email
+    },
   },
   { timestamps: true }
 );

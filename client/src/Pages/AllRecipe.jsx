@@ -183,6 +183,48 @@ const AllRecipe = () => {
         category: "Starter",
         image: "Paneer_Tikka.png",
         description: "A popular North Indian appetizer made with cubes of paneer marinated in yogurt and spices, grilled or baked to perfection.",
+      },
+      {
+        id: 25,
+        title: "Sushi",
+        category: "Asian",
+        image: "Sushi.png",
+        description: "A traditional Japanese dish made with vinegared rice, fresh fish, and vegetables, rolled in seaweed or served as bite-sized pieces.",
+      },
+      {
+        id: 26,
+        title: "Pazham Pori",
+        category: "Snack",
+        image: "Pazham_Pori.png",
+        description: "A classic Kerala tea-time snack made with ripe bananas coated in a light, crispy batter and deep-fried to golden perfection.",
+      },
+      {
+        id: 27,
+        title: "Thukpa",
+        category: "East Indian",
+        image: "Thukpa.png",
+        description: "A warm and comforting Tibetan noodle soup packed with vegetables, noodles, and flavorful spices — a wholesome Himalayan favorite.",
+      },
+      {
+        id: 28,
+        title: "Dal Baati Choorma",
+        category: "West Indian",
+        image: "Dal_Baati_Choorma.png",
+        description: "A traditional Rajasthani delicacy consisting of baked wheat balls (baati), served with spicy lentil curry (dal) and sweet crumbled wheat mixture (choorma).",
+      },
+      {
+        id: 29,
+        title: "Kulcha",
+        category: "North Indian",
+        image: "Kulcha.png",
+        description: "A soft, fluffy Indian flatbread made from refined flour, often stuffed or plain, traditionally cooked in a tandoor and served with chole or curry.",
+      },
+      {
+        id: 30,
+        title: "Egg Curry",
+        category: "South Indian",
+        image: "Egg_Curry.png",
+        description: "A traditional Kerala-style curry featuring boiled eggs simmered in a rich coconut milk gravy infused with spices, curry leaves, and aromatic herbs.",
       }
     ];
 

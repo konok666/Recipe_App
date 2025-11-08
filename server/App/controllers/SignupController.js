@@ -1,12 +1,12 @@
 const SignupModel = require("../models/SignupModel");
 const bcrypt = require("bcrypt");
 
-// ✅ Register (Insert)
+// ✅ Register new user
 exports.registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if email already exists
+    // Check for existing email
     const existingUser = await SignupModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ success: false, message: "Email already exists" });

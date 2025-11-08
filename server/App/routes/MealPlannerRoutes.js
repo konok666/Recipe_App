@@ -10,11 +10,12 @@ const {
   clearAllMeals,
 } = require("../controllers/MealPlannerController");
 
-router.post("/mealplanner", addMeal);                                   // Add meal
-router.get("/mealplanner/:userId", getMeals);                           // Get all meals
-router.put("/mealplanner/:userId/:day/:mealId", updateMeal);            // Update meal
-router.delete("/mealplanner/:userId/:day/:mealId", deleteMeal);         // Delete meal
-router.get("/mealplanner/:userId/shoppinglist", generateShoppingList);  // Generate shopping list
-router.delete("/mealplanner/:userId/clear", clearAllMeals);             // Clear all
+// ✅ Corrected routes — no duplicate "/mealplanner"
+router.post("/", addMeal);                            // POST /api/mealplanner
+router.get("/:userId", getMeals);                     // GET /api/mealplanner/:userId
+router.put("/:userId/:day/:mealId", updateMeal);      // PUT /api/mealplanner/:userId/:day/:mealId
+router.delete("/:userId/:day/:mealId", deleteMeal);   // DELETE /api/mealplanner/:userId/:day/:mealId
+router.get("/:userId/shoppinglist", generateShoppingList); // GET /api/mealplanner/:userId/shoppinglist
+router.delete("/:userId/clear", clearAllMeals);       // DELETE /api/mealplanner/:userId/clear
 
 module.exports = router;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from "../Components/Footer";
+import Dashboard from "../Components/Dashboard";
 import "../Style/Home.css";
 
 function Home() {
@@ -54,10 +54,10 @@ function Home() {
         <div className="website-description">
           <h2>Discover, Create, and Share Amazing Recipes</h2>
           <p>
-            RecipeHub is your ultimate destination for culinary inspiration. Whether you're a seasoned chef 
-            or a cooking beginner, our platform offers a vast collection of delicious recipes from around 
-            the world. Create your personal cookbook, share your favorite dishes with the community, and 
-            discover new flavors that will delight your taste buds.
+            RecipeHub is the premier web-based destination for food ideas. Whether you're an experienced chef,
+            or a cooking beginner, our platform offers a rich repository of delicious dishes from all over the world.
+            the world. Create your personal cookbook, share your favorite dishes with the community, and
+            Discover new flavors that will delight your taste buds.
           </p>
           
           <div className="features">
@@ -73,7 +73,7 @@ function Home() {
             
             <div className="feature-item">
               <h3>👨‍🍳 Share & Connect</h3>
-              <p>Share your culinary creations with the community and connect with fellow food enthusiasts.</p>
+              <p>You can share your food creations and connect with other food enthusiasts.</p>
             </div>
           </div>
           
@@ -86,8 +86,8 @@ function Home() {
         </div>
       </div>
 
-      {/* ✅ Footer Section */}
-      <Footer />
+      {/* ✅ Dashboard Section */}
+      <Dashboard />
     </div>
   );
 }

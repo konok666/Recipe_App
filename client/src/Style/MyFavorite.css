@@ -7,21 +7,27 @@
   box-sizing: border-box;
 }
 
-/* ✅ Keep title centered */
+/* ✅ Title centered */
 .favorites-container h1 {
   text-align: center;
   font-size: 2rem;
-  color: #222;
+  color: #f2994a;
   font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
-/* ✅ Summary section - right side, below title */
+/* ✅ New flex row: Clear button (left) + Summary (right) */
+.favorites-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 40px 30px 40px;
+}
+
+/* ✅ Summary section aligned right */
 .favorites-summary {
   display: flex;
   justify-content: flex-end;
-  gap: 20px;
-  margin: 10px 40px 25px 0; /* top-right-bottom-left */
 }
 
 .summary-card {
@@ -31,7 +37,7 @@
   text-align: center;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  width: 160px; /* small and clean */
+  width: 160px;
 }
 
 .summary-card:hover {
@@ -39,7 +45,7 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
-.summary-card h2 {
+.summary-card h3 {
   font-size: 0.9rem;
   color: #3498db;
   font-weight: 600;
@@ -52,31 +58,9 @@
   color: #2c3e50;
 }
 
-/* ✅ No favorites text */
-.no-favorites {
-  text-align: center;
-  font-size: 1.1rem;
-  color: #777;
-}
-
-/* ✅ Favorites grid */
-.favorites-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  justify-items: center;
-  align-items: stretch;
-  padding-bottom: 40px;
-}
-
-/* ✅ Clear All button */
-.favorites-actions {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.clear-btn {
-  background-color: #f44336;
+/* ✅ Clear button */
+.clear-all-btn {
+  background-color: #222;
   color: white;
   border: none;
   border-radius: 10px;
@@ -85,20 +69,20 @@
   cursor: pointer;
   transition: 0.3s ease;
 }
-
-.clear-btn:hover {
-  background-color: #d32f2f;
+.clear-all-btn:hover {
+  background-color: #000;
   transform: scale(1.05);
 }
 
-/* ✅ Responsive adjustments */
+/* ✅ Responsive fix */
 @media (max-width: 768px) {
-  .favorites-summary {
-    justify-content: center;
-    margin: 10px 0 25px 0;
+  .favorites-actions-row {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
   }
 
-  .summary-card {
-    width: 200px;
+  .favorites-summary {
+    justify-content: center;
   }
 }

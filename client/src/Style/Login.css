@@ -28,7 +28,7 @@ body {
   height: auto;
   margin: 0 auto 1.5rem;
   border-radius: 15px;
-  background-color: #ffffff;
+  background-color: #fff;
   padding: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
@@ -36,12 +36,10 @@ body {
 .login-title {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #333;
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .login-subtitle {
@@ -109,29 +107,6 @@ body {
   cursor: not-allowed;
 }
 
-.divider {
-  position: relative;
-  text-align: center;
-  margin: 1rem 0;
-}
-
-.divider::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: #e0e0e0;
-}
-
-.divider span {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 0 1rem;
-  color: #666;
-  font-size: 0.9rem;
-}
-
 .signup-button {
   padding: 1rem 2rem;
   background: transparent;
@@ -150,38 +125,38 @@ body {
   transform: translateY(-2px);
 }
 
-.login-footer {
-  width: 100%;
-  text-align: right;
-  margin-top: -10px;
+.password-group {
+  position: relative;
 }
 
-.forgot-password {
-  color: #667eea;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: transparent;
-  border: none;
+.password-toggle-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #777;
+  transition: color 0.3s ease;
 }
 
-.forgot-password:hover {
-  text-decoration: underline;
+.password-toggle-icon:hover {
+  color: #333;
 }
 
 @media (max-width: 768px) {
   .login-page {
     padding: 1rem;
   }
-  
+
   .login-card {
     padding: 2rem;
   }
-  
+
   .login-title {
     font-size: 2rem;
   }
-  
+
   .login-subtitle {
     font-size: 1rem;
   }

@@ -9,10 +9,11 @@ const {
   deleteRecipe,
 } = require("../controllers/CookbookController");
 
-router.post("/cookbook", createRecipe);
-router.get("/cookbook", getAllRecipes);
-router.get("/cookbook/:id", getRecipeById);
-router.put("/cookbook/:id", updateRecipe);
-router.delete("/cookbook/:id", deleteRecipe);
+// ✅ Correct routes
+router.post("/", createRecipe);       // POST /api/cookbook
+router.get("/", getAllRecipes);       // GET /api/cookbook?email=user@gmail.com
+router.get("/:id", getRecipeById);    // GET /api/cookbook/:id
+router.put("/:id", updateRecipe);     // PUT /api/cookbook/:id
+router.delete("/:id", deleteRecipe);  // DELETE /api/cookbook/:id
 
 module.exports = router;

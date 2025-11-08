@@ -1,36 +1,37 @@
-/* General Page Styling */
+/* 🌐 General Page Styling */
 .home-container {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-              url('home.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), 
+              url('home.png') center/cover fixed no-repeat;
   min-height: calc(100vh - 80px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem 0;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
+/* 🏠 Hero Section */
 .hero-content {
   text-align: center;
   max-width: 1000px;
   padding: 0 2rem;
+  color: #fff;
 }
 
 .recipe-title {
   font-size: 4rem;
   font-weight: 700;
-  color: #fff;
   margin-bottom: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #fff176 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: slideUp 0.7s ease-in-out;
 }
 
+/* 🧾 Description Card */
 .website-description {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
@@ -38,6 +39,7 @@
   padding: 3rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   margin-top: 2rem;
+  animation: fadeIn 1s ease;
 }
 
 .website-description h2 {
@@ -48,13 +50,14 @@
 }
 
 .website-description > p {
-  font-size: 1.2rem;
-  color: #666;
+  font-size: 1.15rem;
+  color: #555;
   line-height: 1.8;
   margin-bottom: 3rem;
   text-align: center;
 }
 
+/* 🧩 Feature Cards */
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -65,14 +68,15 @@
 .feature-item {
   text-align: center;
   padding: 1.5rem;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.08);
   border-radius: 15px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-item:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
   background: rgba(102, 126, 234, 0.15);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.2);
 }
 
 .feature-item h3 {
@@ -83,11 +87,12 @@
 }
 
 .feature-item p {
-  color: #666;
+  color: #555;
   font-size: 1rem;
   line-height: 1.6;
 }
 
+/* 🚀 Call To Action */
 .cta-section {
   text-align: center;
   padding-top: 2rem;
@@ -115,34 +120,47 @@
 }
 
 .get-started-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.45);
 }
 
+/* 📱 Responsive Design */
 @media (max-width: 768px) {
   .recipe-title {
     font-size: 2.5rem;
   }
-  
+
   .website-description {
     padding: 2rem;
     margin: 1rem;
+    backdrop-filter: blur(4px); /* lighter for mobile */
   }
-  
+
   .website-description h2 {
     font-size: 2rem;
   }
-  
+
   .website-description > p {
     font-size: 1rem;
   }
-  
+
   .features {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .feature-item {
     padding: 1rem;
   }
+}
+
+/* ✨ Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }

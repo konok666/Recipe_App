@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👁️ Import icons
 import "../Style/Login.css";
 
 function Login() {
@@ -9,8 +10,9 @@ function Login() {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // ✅ For toggling password visibility
 
-  // Handle input changes
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -19,7 +21,7 @@ function Login() {
     });
   };
 
-  // Handle login submission
+  // Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -41,7 +43,7 @@ function Login() {
         return;
       }
 
-      // ✅ Store token & user info
+      // ✅ Store user data in localStorage
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -84,9 +86,10 @@ function Login() {
             />
           </div>
 
-          <div className="input-group">
+          {/* ✅ Password field with eye icon */}
+          <div className="input-group password-group">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -94,16 +97,12 @@ function Login() {
               className="login-input"
               required
             />
-          </div>
-
-          <div className="login-footer">
-            <button
-              type="button"
-              className="forgot-password"
-              onClick={() => navigate("/forgotpassword")}
+            <span
+              className="password-toggle-icon"
+              onClick={() => setShowPassword(!showPassword)}
             >
-              Forgot Password?
-            </button>
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
 
           <div className="login-buttons">

@@ -9,19 +9,19 @@ const {
 
 const router = express.Router();
 
-// ✅ Login (insert)
-router.post("/login", loginUser);
+// POST /api/login → Login user
+router.post("/", loginUser);
 
-// ✅ Get all logins
-router.get("/login", getAllLogins);
+// GET /api/login → Get all logins
+router.get("/", getAllLogins);
 
-// ✅ Get single login by ID
-router.get("/login/:id", getLoginById);
+// GET /api/login/:id → Get one login
+router.get("/:id", getLoginById);
 
-// ✅ Update login by ID
-router.put("/login/:id", updateLogin);
+// PUT /api/login/:id → Update login
+router.put("/:id", updateLogin);
 
-// ✅ Delete login by ID
-router.delete("/login/:id", deleteLogin);
+// DELETE /api/login/:id → Delete login
+router.delete("/:id", deleteLogin);
 
 module.exports = router;
