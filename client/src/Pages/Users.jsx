@@ -2,41 +2,47 @@ import React, { useEffect, useState } from "react";
 import "../Style/Profile.css";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const Profile = () => {
+const Users = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [user, setUser] = useState({ name: "", email: "", image: "" });
+  const [searchedUser, setSearchedUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followersList, setFollowersList] = useState([]);
   const [followingList, setFollowingList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalList, setModalList] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const viewedUser = location.state?.user || user;
-
-  // ✅ Initialize logged-in user
+  // ✅ Load current user and searched user
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
+    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const searchEmail = location.state?.searchEmail;
+
     if (storedUser && storedUser.isLoggedIn) {
-      setUser(storedUser);
       setCurrentUser(storedUser);
     } else {
       navigate("/login");
     }
-  }, [navigate]);
 
-  // ✅ Load followers, following, and check follow status
+    if (searchEmail) {
+      const userFound = allUsers.find((u) => u.email === searchEmail);
+      setSearchedUser(userFound);
+    }
+  }, [location.state, navigate]);
+
+  // ✅ Load follow/following data
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || !searchedUser) return;
 
     const followingData = JSON.parse(localStorage.getItem("following")) || [];
     const allUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-    const viewedFollowingObj = followingData.find((f) => f.email === viewedUser.email);
+    const viewedFollowingObj = followingData.find(
+      (f) => f.email === searchedUser.email
+    );
     const viewedFollowing = viewedFollowingObj?.followingEmails || [];
     setFollowingList(
       viewedFollowing.map((email) => {
@@ -49,18 +55,22 @@ const Profile = () => {
       .filter((u) => {
         const userFollowObj = followingData.find((f) => f.email === u.email);
         const userFollowing = userFollowObj?.followingEmails || [];
-        return userFollowing.includes(viewedUser.email);
+        return userFollowing.includes(searchedUser.email);
       })
       .map((u) => u.name);
     setFollowersList(followers);
 
-    const currentFollowObj = followingData.find((f) => f.email === currentUser.email);
-    setIsFollowing(currentFollowObj?.followingEmails.includes(viewedUser.email) || false);
-  }, [viewedUser, currentUser]);
+    const currentFollowObj = followingData.find(
+      (f) => f.email === currentUser.email
+    );
+    setIsFollowing(
+      currentFollowObj?.followingEmails.includes(searchedUser.email) || false
+    );
+  }, [searchedUser, currentUser]);
 
-  // ✅ Follow/unfollow
+  // ✅ Follow/unfollow handler
   const handleFollow = () => {
-    if (!currentUser) return;
+    if (!currentUser || !searchedUser) return;
 
     let followingData = JSON.parse(localStorage.getItem("following")) || [];
     let userFollow = followingData.find((f) => f.email === currentUser.email);
@@ -71,14 +81,14 @@ const Profile = () => {
     }
 
     if (!isFollowing) {
-      userFollow.followingEmails.push(viewedUser.email);
-      alert(`You are now following ${viewedUser.name}`);
+      userFollow.followingEmails.push(searchedUser.email);
+      alert(`You are now following ${searchedUser.name}`);
       setFollowersList((prev) => [...prev, currentUser.name]);
     } else {
       userFollow.followingEmails = userFollow.followingEmails.filter(
-        (e) => e !== viewedUser.email
+        (e) => e !== searchedUser.email
       );
-      alert(`You unfollowed ${viewedUser.name}`);
+      alert(`You unfollowed ${searchedUser.name}`);
       setFollowersList((prev) => prev.filter((f) => f !== currentUser.name));
     }
 
@@ -86,7 +96,12 @@ const Profile = () => {
     localStorage.setItem("following", JSON.stringify(followingData));
   };
 
-  // ✅ Modal open/close
+  // ✅ Back button handler
+  const handleBack = () => {
+    navigate("/profile", { state: { user: currentUser } });
+  };
+
+  // ✅ Modal
   const openModal = (type) => {
     if (type === "followers") {
       setModalTitle("Followers");
@@ -103,67 +118,42 @@ const Profile = () => {
     setModalList([]);
   };
 
-  // ✅ Search functionality (only one user directly)
-  const handleFindUsers = () => {
-    if (!searchQuery.trim()) {
-      alert("Please enter a name or email to search!");
-      return;
-    }
-
-    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const foundUser = allUsers.find(
-      (u) =>
-        (u.name.toLowerCase() === searchQuery.toLowerCase() ||
-          u.email.toLowerCase() === searchQuery.toLowerCase()) &&
-        u.email !== currentUser?.email
+  if (!searchedUser) {
+    return (
+      <div className="profile-container">
+        <h2>No user found</h2>
+        <button onClick={handleBack} className="back-btn">
+          🔙 Back to My Profile
+        </button>
+      </div>
     );
-
-    if (foundUser) {
-      navigate("/users", { state: { searchEmail: foundUser.email } });
-    } else {
-      alert("No user found with that name or email!");
-    }
-  };
-
-  // ✅ Back button
-  const handleBack = () => {
-    navigate("/profile", { state: { user: currentUser } });
-  };
+  }
 
   return (
     <div className="profile-container">
-      {/* 🔍 Search Section */}
-      <div className="search-section">
-        <input
-          type="text"
-          placeholder="🔍 Enter name or email to find user..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button className="find-users-btn" onClick={handleFindUsers}>
-          Find User
-        </button>
-      </div>
-
-      {/* 👤 Profile Box */}
       <div className="profile-box">
-        <h1>
-          {currentUser?.email === viewedUser.email ? "👤 My Profile" : "👤 User Profile"}
-        </h1>
+        <h1>👤 User Profile</h1>
+
+        {/* ✅ Back button placed inside container, below header */}
+        <div className="back-btn-wrapper">
+          <button className="back-btn" onClick={handleBack}>
+            ← Back
+          </button>
+        </div>
+
         <div className="profile-card">
           <div className="profile-image">
             <img
               src={
-                viewedUser.image ||
+                searchedUser.image ||
                 "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               }
               alt="Profile"
             />
           </div>
           <div className="profile-info">
-            <h2>{viewedUser.name || "Unknown User"}</h2>
-            <p>Email: {viewedUser.email || "No email available"}</p>
-
+            <h2>{searchedUser.name}</h2>
+            <p>Email: {searchedUser.email}</p>
             <div className="followers-following">
               <p onClick={() => openModal("followers")}>
                 Followers: {followersList.length}
@@ -173,20 +163,14 @@ const Profile = () => {
               </p>
             </div>
 
-            {currentUser?.email !== viewedUser.email && (
+            <div className="profile-actions">
               <button
                 className={isFollowing ? "unfollow-btn" : "follow-btn"}
                 onClick={handleFollow}
               >
                 {isFollowing ? "Unfollow" : "Follow"}
               </button>
-            )}
-
-            {currentUser?.email !== viewedUser.email && (
-              <button className="back-btn" onClick={handleBack}>
-                🔙 Back to My Profile
-              </button>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -215,4 +199,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default Users;

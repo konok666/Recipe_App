@@ -53,6 +53,22 @@ function SignUp() {
 
       if (response.ok && data.success) {
         alert("🎉 Account created successfully!");
+
+        // ✅ Save this user to the list of all users for Profile search
+        const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+        const isAlreadyRegistered = existingUsers.some(
+          (u) => u.email === formData.email.trim().toLowerCase()
+        );
+
+        if (!isAlreadyRegistered) {
+          existingUsers.push({
+            name: formData.name.trim(),
+            email: formData.email.trim().toLowerCase(),
+            image: "",
+          });
+          localStorage.setItem("users", JSON.stringify(existingUsers));
+        }
+
         navigate("/login");
       } else {
         alert(data.message || "❌ Signup failed. Please try again.");
