@@ -9,7 +9,7 @@ import Profile from "./Pages/Profile";
 import RecipeDetails from "./Pages/RecipeDetails";
 import MyFavorite from "./Pages/MyFavorite";
 import MealPlanner from "./Pages/MealPlanner";
-import Users from "./Pages/Users";
+import Suggestions from "./Pages/Suggestions";
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
         <Route path="/recipe/:id" element={<RecipeDetails />} />
         <Route path="/favorites" element={<MyFavorite />} />
         <Route path="/mealplanner" element={<MealPlanner />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/suggestions" element={<Suggestions />} />
       </Routes>
     </Router>
   );

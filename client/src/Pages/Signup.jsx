@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // 👁️ import icons
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "../Style/Signup.css";
 
 function SignUp() {
@@ -17,10 +17,7 @@ function SignUp() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -54,8 +51,8 @@ function SignUp() {
       if (response.ok && data.success) {
         alert("🎉 Account created successfully!");
 
-        // ✅ Save this user to the list of all users for Profile search
-        const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+        // ✅ Save this user to the "signups" list in localStorage
+        const existingUsers = JSON.parse(localStorage.getItem("signups")) || [];
         const isAlreadyRegistered = existingUsers.some(
           (u) => u.email === formData.email.trim().toLowerCase()
         );
@@ -64,9 +61,9 @@ function SignUp() {
           existingUsers.push({
             name: formData.name.trim(),
             email: formData.email.trim().toLowerCase(),
-            image: "",
+            image: "", // optional profile image
           });
-          localStorage.setItem("users", JSON.stringify(existingUsers));
+          localStorage.setItem("signups", JSON.stringify(existingUsers)); // <-- fixed key
         }
 
         navigate("/login");
@@ -134,7 +131,7 @@ function SignUp() {
               className="toggle-password"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
+              {showPassword ? <FaEye /> : <FaEyeSlash />}
             </span>
           </div>
 
@@ -151,11 +148,9 @@ function SignUp() {
             />
             <span
               className="toggle-password"
-              onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              {showConfirmPassword ? <FaEye /> : <FaEyeSlash />}
             </span>
           </div>
 

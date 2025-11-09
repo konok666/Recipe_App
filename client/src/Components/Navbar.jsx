@@ -12,7 +12,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkUserStatus = () => {
-      const userData = localStorage.getItem('user');
+      const userData = localStorage.getItem("user");
       if (userData) {
         const parsedUser = JSON.parse(userData);
         if (parsedUser.isLoggedIn) {
@@ -41,7 +41,7 @@ const Navbar = () => {
     };
 
     const handleStorageChange = (e) => {
-      if (e.key === 'user') {
+      if (e.key === "user") {
         checkUserStatus();
       }
     };
@@ -54,20 +54,20 @@ const Navbar = () => {
       setTimeout(checkUserStatus, 100);
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('userLogin', handleLoginEvent);
-    window.addEventListener('userLogout', handleLogoutEvent);
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("userLogin", handleLoginEvent);
+    window.addEventListener("userLogout", handleLogoutEvent);
 
     const interval = setInterval(checkUserStatus, 2000);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('userLogin', handleLoginEvent);
-      window.removeEventListener('userLogout', handleLogoutEvent);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("userLogin", handleLoginEvent);
+      window.removeEventListener("userLogout", handleLogoutEvent);
       clearInterval(interval);
     };
   }, []);
@@ -77,14 +77,13 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     setIsLoggedIn(false);
     setUser(null);
     setOpen(false);
 
-    window.dispatchEvent(new CustomEvent('userLogout'));
-    
-    navigate('/');
+    window.dispatchEvent(new CustomEvent("userLogout"));
+    navigate("/");
   };
 
   useEffect(() => {
@@ -95,11 +94,11 @@ const Navbar = () => {
     };
 
     if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [open]);
 
@@ -110,7 +109,7 @@ const Navbar = () => {
         <Link to="/" className="nav-link home-link">
           Home
         </Link>
-        
+
         {/* Show these links only when user is logged in */}
         {isLoggedIn && (
           <>
@@ -120,11 +119,11 @@ const Navbar = () => {
             <Link to="/mycookbook" className="nav-link">
               My Cookbook
             </Link>
-            <Link to="/favorites" className="nav-link">
-              My Favorites
-            </Link>
             <Link to="/mealplanner" className="nav-link">
               My Plan
+            </Link>
+            <Link to="/suggestions" className="nav-link">
+              Suggestions
             </Link>
           </>
         )}
@@ -144,13 +143,24 @@ const Navbar = () => {
                   <div className="user-info">
                     <p>Welcome, {user?.name || user?.email}</p>
                   </div>
-                  <Link to="/profile" onClick={() => setOpen(false)}>Profile</Link>
-                  <button onClick={handleLogout} className="logout-btn">Logout</button>
+                  <Link to="/profile" onClick={() => setOpen(false)}>
+                    Profile
+                  </Link>
+                  <Link to="/favorites" onClick={() => setOpen(false)}>
+                    My Favorites
+                  </Link>
+                  <button onClick={handleLogout} className="logout-btn">
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={() => setOpen(false)}>Sign In</Link>
-                  <Link to="/signup" onClick={() => setOpen(false)}>Sign Up</Link>
+                  <Link to="/login" onClick={() => setOpen(false)}>
+                    Sign In
+                  </Link>
+                  <Link to="/signup" onClick={() => setOpen(false)}>
+                    Sign Up
+                  </Link>
                 </>
               )}
             </div>

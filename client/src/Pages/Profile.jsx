@@ -1,92 +1,58 @@
 import React, { useEffect, useState } from "react";
 import "../Style/Profile.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [user, setUser] = useState({ name: "", email: "", image: "" });
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [followersList, setFollowersList] = useState([]);
   const [followingList, setFollowingList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalList, setModalList] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const [currentUser, setCurrentUser] = useState(null);
-  const viewedUser = location.state?.user || user;
-
-  // ✅ Initialize logged-in user
+  // Load logged-in user
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser && storedUser.isLoggedIn) {
-      setUser(storedUser);
       setCurrentUser(storedUser);
     } else {
       navigate("/login");
     }
   }, [navigate]);
 
-  // ✅ Load followers, following, and check follow status
+  // Load followers and following
   useEffect(() => {
     if (!currentUser) return;
 
+    const allUsers = JSON.parse(localStorage.getItem("signups")) || [];
     const followingData = JSON.parse(localStorage.getItem("following")) || [];
-    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-    const viewedFollowingObj = followingData.find((f) => f.email === viewedUser.email);
-    const viewedFollowing = viewedFollowingObj?.followingEmails || [];
+    // Following list
+    const userFollowObj = followingData.find(
+      (f) => f.email === currentUser.email
+    );
+    const followingEmails = userFollowObj?.followingEmails || [];
     setFollowingList(
-      viewedFollowing.map((email) => {
+      followingEmails.map((email) => {
         const u = allUsers.find((user) => user.email === email);
         return u ? u.name : email;
       })
     );
 
+    // Followers list
     const followers = allUsers
       .filter((u) => {
-        const userFollowObj = followingData.find((f) => f.email === u.email);
-        const userFollowing = userFollowObj?.followingEmails || [];
-        return userFollowing.includes(viewedUser.email);
+        const uFollowObj = followingData.find((f) => f.email === u.email);
+        const uFollowing = uFollowObj?.followingEmails || [];
+        return uFollowing.includes(currentUser.email);
       })
       .map((u) => u.name);
     setFollowersList(followers);
+  }, [currentUser]);
 
-    const currentFollowObj = followingData.find((f) => f.email === currentUser.email);
-    setIsFollowing(currentFollowObj?.followingEmails.includes(viewedUser.email) || false);
-  }, [viewedUser, currentUser]);
-
-  // ✅ Follow/unfollow
-  const handleFollow = () => {
-    if (!currentUser) return;
-
-    let followingData = JSON.parse(localStorage.getItem("following")) || [];
-    let userFollow = followingData.find((f) => f.email === currentUser.email);
-
-    if (!userFollow) {
-      userFollow = { email: currentUser.email, followingEmails: [] };
-      followingData.push(userFollow);
-    }
-
-    if (!isFollowing) {
-      userFollow.followingEmails.push(viewedUser.email);
-      alert(`You are now following ${viewedUser.name}`);
-      setFollowersList((prev) => [...prev, currentUser.name]);
-    } else {
-      userFollow.followingEmails = userFollow.followingEmails.filter(
-        (e) => e !== viewedUser.email
-      );
-      alert(`You unfollowed ${viewedUser.name}`);
-      setFollowersList((prev) => prev.filter((f) => f !== currentUser.name));
-    }
-
-    setIsFollowing(!isFollowing);
-    localStorage.setItem("following", JSON.stringify(followingData));
-  };
-
-  // ✅ Modal open/close
+  // Open modal for followers or following
   const openModal = (type) => {
     if (type === "followers") {
       setModalTitle("Followers");
@@ -103,66 +69,85 @@ const Profile = () => {
     setModalList([]);
   };
 
-  // ✅ Search functionality (only one user directly)
-  const handleFindUsers = () => {
-    if (!searchQuery.trim()) {
-      alert("Please enter a name or email to search!");
-      return;
+  if (!currentUser) {
+    return (
+      <div className="profile-container">
+        <h2>Loading profile...</h2>
+      </div>
+    );
+  }
+
+  // Function to toggle follow/unfollow
+  const handleToggleFollow = (name) => {
+    const allUsers = JSON.parse(localStorage.getItem("signups")) || [];
+    const followingData = JSON.parse(localStorage.getItem("following")) || [];
+    const userFollowObj =
+      followingData.find((f) => f.email === currentUser.email) || {
+        email: currentUser.email,
+        followingEmails: [],
+      };
+
+    const userObj = allUsers.find((u) => u.name === name);
+    if (!userObj) return;
+    const email = userObj.email;
+
+    const isFollowing = userFollowObj.followingEmails.includes(email);
+
+    if (isFollowing) {
+      // Unfollow
+      userFollowObj.followingEmails = userFollowObj.followingEmails.filter(
+        (e) => e !== email
+      );
+      setFollowingList((prev) => prev.filter((n) => n !== name));
+      if (modalTitle === "Following") {
+        setModalList((prev) => prev.filter((n) => n !== name));
+      }
+    } else {
+      // Follow / Follow back
+      userFollowObj.followingEmails.push(email);
+      setFollowingList((prev) => [...prev, name]);
+      if (modalTitle === "Following") {
+        setModalList((prev) => [...prev, name]);
+      }
     }
 
-    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const foundUser = allUsers.find(
-      (u) =>
-        (u.name.toLowerCase() === searchQuery.toLowerCase() ||
-          u.email.toLowerCase() === searchQuery.toLowerCase()) &&
-        u.email !== currentUser?.email
+    // Save back to localStorage
+    const otherUsers = followingData.filter((f) => f.email !== currentUser.email);
+    localStorage.setItem(
+      "following",
+      JSON.stringify([...otherUsers, userFollowObj])
     );
 
-    if (foundUser) {
-      navigate("/users", { state: { searchEmail: foundUser.email } });
-    } else {
-      alert("No user found with that name or email!");
-    }
-  };
-
-  // ✅ Back button
-  const handleBack = () => {
-    navigate("/profile", { state: { user: currentUser } });
+    // Update followers list too
+    const updatedFollowers = allUsers
+      .filter((u) => {
+        const uFollowObj = JSON.parse(localStorage.getItem("following"))?.find(
+          (f) => f.email === u.email
+        );
+        const uFollowing = uFollowObj?.followingEmails || [];
+        return uFollowing.includes(currentUser.email);
+      })
+      .map((u) => u.name);
+    setFollowersList(updatedFollowers);
   };
 
   return (
     <div className="profile-container">
-      {/* 🔍 Search Section */}
-      <div className="search-section">
-        <input
-          type="text"
-          placeholder="🔍 Enter name or email to find user..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button className="find-users-btn" onClick={handleFindUsers}>
-          Find User
-        </button>
-      </div>
-
-      {/* 👤 Profile Box */}
       <div className="profile-box">
-        <h1>
-          {currentUser?.email === viewedUser.email ? "👤 My Profile" : "👤 User Profile"}
-        </h1>
+        <h1>👤 My Profile</h1>
         <div className="profile-card">
           <div className="profile-image">
             <img
               src={
-                viewedUser.image ||
+                currentUser.image ||
                 "https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
               }
               alt="Profile"
             />
           </div>
           <div className="profile-info">
-            <h2>{viewedUser.name || "Unknown User"}</h2>
-            <p>Email: {viewedUser.email || "No email available"}</p>
+            <h2>{currentUser.name || "Unknown User"}</h2>
+            <p>Email: {currentUser.email || "No email available"}</p>
 
             <div className="followers-following">
               <p onClick={() => openModal("followers")}>
@@ -172,26 +157,11 @@ const Profile = () => {
                 Following: {followingList.length}
               </p>
             </div>
-
-            {currentUser?.email !== viewedUser.email && (
-              <button
-                className={isFollowing ? "unfollow-btn" : "follow-btn"}
-                onClick={handleFollow}
-              >
-                {isFollowing ? "Unfollow" : "Follow"}
-              </button>
-            )}
-
-            {currentUser?.email !== viewedUser.email && (
-              <button className="back-btn" onClick={handleBack}>
-                🔙 Back to My Profile
-              </button>
-            )}
           </div>
         </div>
       </div>
 
-      {/* 🪟 Modal */}
+      {/* Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -199,7 +169,18 @@ const Profile = () => {
             {modalList.length > 0 ? (
               <ul>
                 {modalList.map((name, idx) => (
-                  <li key={idx}>{name}</li>
+                  <li key={idx}>
+                    {name}
+                    <button
+                      className={`follow-btn ${
+                        followingList.includes(name) ? "unfollow" : "follow-back"
+                      }`}
+                      onClick={() => handleToggleFollow(name)}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      {followingList.includes(name) ? "Unfollow" : "Follow Back"}
+                    </button>
+                  </li>
                 ))}
               </ul>
             ) : (
