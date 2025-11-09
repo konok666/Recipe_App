@@ -102,7 +102,7 @@ function Suggestions() {
 
   return (
     <div className="suggestions-container">
-      <h2>Suggestions</h2>
+      <h1>Suggestions</h1>
 
       {/* Search section */}
       <div className="search-wrapper">
